@@ -6,6 +6,8 @@
 - Partir de `.devflow/project-map.md` s'il existe ; sinon, signaler qu'un `/devflow:discover` aiderait.
 - Rechercher activement : code mort, couplages cachés (globales, includes en cascade, SQL partagé entre pages), effets de bord (sessions, caches, fichiers).
 - Lister les autres points d'appel des fonctions touchées (Grep) : en legacy, une fonction est souvent réutilisée là où on ne l'attend pas.
+- Failles et dette **existantes** dans la zone : les signaler avec une proposition de ticket séparé. Elles ne bloquent le ticket que si le ticket les **aggrave** (nouvelle entrée non protégée, nouvelle donnée exposée). Le nouveau code, lui, est sûr.
+- Identifier explicitement les conventions observées à imiter (nommage, indentation, accès aux données) et l'absence éventuelle d'outillage de test.
 
 ## plan
 - **Changement minimal** : aucune tâche de refactoring hors du périmètre du ticket.

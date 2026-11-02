@@ -9,6 +9,7 @@
 
 | Rôle | Section de profil (`K/stacks/*.md`) | Section de mode et de tâche (`K/modes/*.md`, `K/tasks/*.md`) | `K/core/clean-code.md` |
 |---|---|---|---|
+| `dev-analyse` (synthèse) | Architecture, Testing | `analyse` | non |
 | `business-analyst` | — | `analyse` | non |
 | `code-mapper` | Architecture | `analyse` | non |
 | `architect` | Architecture | `analyse` | non |
