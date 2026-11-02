@@ -5,6 +5,7 @@ detect:                        # utilisé par /devflow:init (une condition vraie
   files_any: []                # fichiers dont la présence identifie le profil
   composer_require_any: []     # paquets dans require / require-dev de composer.json
   package_json_any: []         # paquets dans dependencies / devDependencies de package.json
+  headers_any: []              # facultatif : { file: <nom ou motif>, header: "<texte>" } cherché dans l'en-tête du fichier
 ---
 
 # Profil <nom>
