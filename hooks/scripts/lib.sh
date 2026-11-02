@@ -26,3 +26,14 @@ deny() {
   echo "devflow: $1" >&2
   exit 2
 }
+
+# Retire le corps des heredocs : c'est du contenu, pas des fichiers manipulés.
+strip_heredocs() {
+  awk '
+    terminator != "" { line = $0; sub(/^\t+/, "", line); if (line == terminator) terminator = ""; next }
+    match($0, /<<-?[[:space:]]*["\x27]?[A-Za-z_][A-Za-z0-9_]*/) {
+      terminator = substr($0, RSTART, RLENGTH); gsub(/^<<-?[[:space:]]*["\x27]?/, "", terminator)
+    }
+    { print }
+  '
+}

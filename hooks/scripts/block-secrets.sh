@@ -22,17 +22,6 @@ refuse() {
   deny "commande refusée : elle vise un fichier de secrets ($1). Demande à l'utilisateur de le faire lui-même si c'est nécessaire."
 }
 
-# Retire le corps des heredocs : c'est du contenu, pas des fichiers manipulés.
-strip_heredocs() {
-  awk '
-    terminator != "" { line = $0; sub(/^\t+/, "", line); if (line == terminator) terminator = ""; next }
-    match($0, /<<-?[[:space:]]*["\x27]?[A-Za-z_][A-Za-z0-9_]*/) {
-      terminator = substr($0, RSTART, RLENGTH); gsub(/^<<-?[[:space:]]*["\x27]?/, "", terminator)
-    }
-    { print }
-  '
-}
-
 check_segment() {
   local segment="$1" target word
   while [[ "$segment" =~ [0-9]*[\<\>]{1,2}[[:space:]]*([^[:space:]\;\&\|]+) ]]; do

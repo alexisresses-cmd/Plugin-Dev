@@ -1,5 +1,5 @@
 {
-  "description": "Garde-fous devflow : secrets, commandes dangereuses, commentaires superflus",
+  "description": "Garde-fous devflow : secrets, chemins protégés (WordPress), commandes dangereuses, commentaires superflus",
   "hooks": {
     "PreToolUse": [
       {
@@ -8,6 +8,16 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/block-secrets.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/protect-paths.sh",
             "timeout": 10
           }
         ]

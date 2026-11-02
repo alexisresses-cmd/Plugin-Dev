@@ -136,6 +136,67 @@ expect allow block-secrets.sh "block_secrets: false"  "$(file_in Read /app/.env)
 rm "$PROJECT/.devflow/config.local.yml" "$PROJECT/.devflow/config.yml"
 expect block block-secrets.sh "sans config → actif"   "$(file_in Read /app/.env)"
 expect allow no-comments.sh "sans config → inactif"   "$(edit_in src/A.php '$a = 1;' $'// commentaire\n$a = 2;')"
+
+# protect-paths (WordPress)
+expect allow protect-paths.sh "sans config → autorisé"  "$(file_in Edit "$PROJECT/wp-includes/version.php")"
+THEME="wp-content/themes/mon-theme"
+cat > "$PROJECT/.devflow/config.yml" <<YAML
+schema_version: 1
+stacks:
+  - path: $THEME/
+    profile: wordpress
+    mode: legacy
+    wordpress:
+      type: child-theme   # thème enfant
+      protected:
+        - wp-admin/
+        - "wp-includes/"
+        - wp-content/plugins/
+        - wp-content/themes/parent-theme/
+  - path: wp-content/plugins/mt-events/
+    profile: wordpress
+    wordpress: { type: plugin }
+    wordpress:
+      protected: [wp-admin/, wp-content/plugins/]
+YAML
+check "protected : liste à tirets" "wp-admin wp-includes wp-content/plugins wp-content/themes/parent-theme" \
+  "$(config_protected_paths | grep -v "^$THEME/\|^wp-content/plugins/mt-events/" | tr '\n' ' ' | sed 's/ $//')"
+check "protected : liste inline"   "wp-content/plugins/mt-events/wp-admin" \
+  "$(config_protected_paths | grep '^wp-content/plugins/mt-events/' | head -1)"
+expect block protect-paths.sh "Edit wp-includes"         "$(file_in Edit "$PROJECT/wp-includes/version.php")"
+expect block protect-paths.sh "Write relatif wp-admin"   "$(jq -n --arg c "$PROJECT" '{tool_name:"Write",cwd:$c,tool_input:{file_path:"wp-admin/index.php"}}')"
+expect block protect-paths.sh "MultiEdit thème parent"   "$(file_in MultiEdit "$PROJECT/wp-content/themes/parent-theme/functions.php")"
+expect block protect-paths.sh "Edit extension tierce"    "$(file_in Edit "$PROJECT/wp-content/plugins/advanced-custom-fields-pro/acf.php")"
+expect block protect-paths.sh "chemin avec .."           "$(file_in Edit "$PROJECT/$THEME/../parent-theme/style.css")"
+expect block protect-paths.sh "NotebookEdit protégé"     "$(jq -n --arg p "$PROJECT/wp-includes/a.ipynb" '{tool_name:"NotebookEdit",tool_input:{notebook_path:$p}}')"
+expect allow protect-paths.sh "Edit thème enfant"        "$(file_in Edit "$PROJECT/$THEME/functions.php")"
+expect allow protect-paths.sh "Edit extension du projet" "$(file_in Edit "$PROJECT/wp-content/plugins/mt-events/mt-events.php")"
+expect allow protect-paths.sh "préfixe proche"           "$(file_in Edit "$PROJECT/wp-includes-backup/a.php")"
+expect allow protect-paths.sh "hors du projet"           "$(file_in Edit "/tmp/wp-includes/a.php")"
+expect allow protect-paths.sh "Read non concerné"        "$(file_in Read "$PROJECT/wp-includes/version.php")"
+expect block protect-paths.sh "relatif au path du stack" "$(file_in Edit "$PROJECT/$THEME/wp-includes/x.php")"
+in_project() { jq -n --arg c "$1" --arg d "$PROJECT" '{tool_name:"Bash",cwd:$d,tool_input:{command:$c}}'; }
+expect block protect-paths.sh "sed -i thème parent"      "$(in_project 'sed -i s/a/b/ wp-content/themes/parent-theme/functions.php')"
+expect block protect-paths.sh "redirection wp-includes"  "$(in_project 'echo x > wp-includes/load.php')"
+expect block protect-paths.sh "cp vers extension tierce" "$(in_project 'cp patch.php wp-content/plugins/acf/acf.php')"
+expect block protect-paths.sh "cp -t wp-admin"           "$(in_project 'cp -t wp-admin/ a.php')"
+expect block protect-paths.sh "mv depuis wp-includes"    "$(in_project 'mv wp-includes/a.php /tmp/a.php')"
+expect block protect-paths.sh "mv d'un parent protégé"   "$(in_project 'mv wp-content /tmp/old')"
+expect block protect-paths.sh "rm dans wp-admin"         "$(in_project 'git status && rm wp-admin/about.php')"
+expect block protect-paths.sh "tee -a thème parent"      "$(in_project 'echo x | tee -a wp-content/themes/parent-theme/style.css')"
+expect allow protect-paths.sh "cp depuis le parent"      "$(in_project "cp wp-content/themes/parent-theme/single.php $THEME/single.php")"
+expect allow protect-paths.sh "lecture du cœur"          "$(in_project 'grep -rn add_action wp-includes/plugin.php > /tmp/out.txt')"
+expect allow protect-paths.sh "sed sans -i"              "$(in_project 'sed -n 1,20p wp-includes/version.php')"
+expect allow protect-paths.sh "2>&1 et /dev/null"        "$(in_project 'php -l wp-includes/version.php 2>&1 >/dev/null')"
+expect allow protect-paths.sh "heredoc qui cite le cœur" "$(in_project $'cat > notes.md <<\'EOF\'\necho > wp-includes/x\nEOF')"
+printf 'stacks:\n  - path: ./\n    wordpress:\n      protected: []\n' > "$PROJECT/.devflow/config.local.yml"
+expect block protect-paths.sh "local ne retire rien"     "$(file_in Edit "$PROJECT/wp-includes/version.php")"
+printf 'stacks:\n  - path: ./\n    wordpress:\n      protected:\n      - wp-content/uploads/\n' > "$PROJECT/.devflow/config.local.yml"
+expect block protect-paths.sh "local ajoute"             "$(file_in Write "$PROJECT/wp-content/uploads/a.jpg")"
+printf 'stacks:\n  - path: wp-content/plugins/acf/\n    profile: wordpress\n' > "$PROJECT/.devflow/config.local.yml"
+expect block protect-paths.sh "path local ≠ exception"   "$(file_in Edit "$PROJECT/wp-content/plugins/acf/acf.php")"
+rm "$PROJECT/.devflow/config.local.yml" "$PROJECT/.devflow/config.yml"
+
 rmdir "$PROJECT/.devflow" "$PROJECT"
 
 echo "hooks : $pass OK, $fail KO"
