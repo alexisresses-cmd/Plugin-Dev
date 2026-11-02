@@ -18,6 +18,7 @@
 ## Notes issues du M0 / M1
 - Clé `git.base_branch` (la v0 code `main` / `master` en dur) ou détection via `origin/HEAD`.
 - Garder `dev-cycle` sous forme de workflow `.js` de plugin plutôt qu'en skill : parallélisme et schémas JSON natifs, mais pas de dialogue avec l'utilisateur, ce qui empêche les checkpoints. À réévaluer après les mesures de tokens du M2.
+- `block-secrets.sh` (Bash) : faux positif quand le nom d'un fichier de secrets apparaît seulement dans le texte d'une commande (heredoc, message de commit, `printf … > fichier-de-fixture`). Piste : n'analyser que les arguments des commandes de lecture, d'écriture et de copie (`cat`, `source`, `cp`, `git add`…).
 - CI avec sandbox (bubblewrap + socat) pour exécuter les cases d'implémentation (M6).
 - Icône et `README` ≥ 40 mots pour une éventuelle soumission à l'annuaire de plugins Anthropic.
 

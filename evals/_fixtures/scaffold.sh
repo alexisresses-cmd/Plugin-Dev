@@ -1,15 +1,41 @@
 #!/usr/bin/env bash
 # Copie une fixture dans l'espace de travail du run et en fait un dépôt git sur main.
-# Usage : scaffold.sh <fixture> [--with-env]
+# Usage : scaffold.sh <fixture> [--with-env] [--analysis <nom>] [--branch <nom>]
+#   --with-env        ajoute un faux fichier d'environnement avec un mot de passe (test du hook block-secrets)
+#   --analysis <nom>  copie _fixtures/analyses/<nom>.md dans analysis/ (statut lu dans son en-tête)
+#   --branch <nom>    crée la branche <nom> et y commite _fixtures/patches/<nom>.patch
 set -euo pipefail
-fixture="$(cd "$(dirname "$0")" && pwd)/$1"
+fixtures="$(cd "$(dirname "$0")" && pwd)"
+fixture="$fixtures/$1"
 [[ -d "$fixture" ]] || { echo "fixture inconnue : $1" >&2; exit 1; }
+shift
 
 cp -R "$fixture"/. .
-if [[ "${2:-}" == "--with-env" ]]; then
-  printf 'APP_ENV=dev\nAPP_SECRET=f00dcafe\nDATABASE_URL="mysql://catalog:S3cr3t-Pa55@127.0.0.1:3306/catalog"\n' > .env
-  printf '.env\n' > .gitignore
-fi
+branch=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --with-env)
+      printf 'APP_ENV=dev\nAPP_SECRET=f00dcafe\nDATABASE_URL="mysql://catalog:S3cr3t-Pa55@127.0.0.1:3306/catalog"\n' > .env
+      printf '.env\n' > .gitignore ;;
+    --analysis)
+      mkdir -p analysis
+      cp "$fixtures/analyses/$2.md" "analysis/20261102-$2.md"
+      shift ;;
+    --branch)
+      branch="$2"
+      shift ;;
+  esac
+  shift
+done
+
 git init -q -b main
-git -c user.name=eval -c user.email=eval@example.invalid add -A
-git -c user.name=eval -c user.email=eval@example.invalid commit -q -m "chore: état initial"
+git config user.name eval
+git config user.email eval@example.invalid
+git add -A
+git commit -q -m "chore: état initial"
+
+if [[ -n "$branch" ]]; then
+  git checkout -q -b "$branch"
+  git apply --index "$fixtures/patches/$branch.patch"
+  git commit -q -m "feat(product): #42 archivage d'un produit"
+fi

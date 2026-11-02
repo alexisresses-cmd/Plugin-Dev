@@ -1,0 +1,95 @@
+diff --git a/migrations/Version20261102000000.php b/migrations/Version20261102000000.php
+new file mode 100644
+index 0000000..12fdc76
+--- /dev/null
++++ b/migrations/Version20261102000000.php
+@@ -0,0 +1,21 @@
++<?php
++
++declare(strict_types=1);
++
++namespace DoctrineMigrations;
++
++use Doctrine\DBAL\Schema\Schema;
++use Doctrine\Migrations\AbstractMigration;
++
++final class Version20261102000000 extends AbstractMigration
++{
++    public function up(Schema $schema): void
++    {
++        $this->addSql('ALTER TABLE product ADD archived_at DATETIME DEFAULT NULL');
++    }
++
++    public function down(Schema $schema): void
++    {
++        $this->addSql('ALTER TABLE product DROP archived_at');
++    }
++}
+diff --git a/src/Controller/ProductController.php b/src/Controller/ProductController.php
+index c10832a..4cf1f70 100644
+--- a/src/Controller/ProductController.php
++++ b/src/Controller/ProductController.php
+@@ -7,6 +7,7 @@ namespace App\Controller;
+ use App\Entity\Product;
+ use App\Repository\ProductRepository;
+ use App\Service\ProductFactory;
++use Doctrine\ORM\EntityManagerInterface;
+ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+ use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\HttpFoundation\Request;
+@@ -20,7 +21,9 @@ final class ProductController extends AbstractController
+     #[Route('', methods: ['GET'])]
+     public function list(ProductRepository $products): JsonResponse
+     {
+-        return $this->json($products->findCatalog(), context: ['groups' => 'product:read']);
++        $catalog = array_filter($products->findCatalog(), fn (Product $p) => !$p->isArchived());
++
++        return $this->json(array_values($catalog), context: ['groups' => 'product:read']);
+     }
+ 
+     #[Route('/{id}', methods: ['GET'])]
+@@ -29,6 +32,15 @@ final class ProductController extends AbstractController
+         return $this->json($product, context: ['groups' => 'product:read']);
+     }
+ 
++    #[Route('/{id}/archive', methods: ['POST'])]
++    public function archive(Product $product, EntityManagerInterface $entityManager): JsonResponse
++    {
++        $product->archive();
++        $entityManager->flush();
++
++        return $this->json($product, context: ['groups' => 'product:read']);
++    }
++
+     #[Route('', methods: ['POST'])]
+     #[IsGranted('PRODUCT_CREATE')]
+     public function create(Request $request, ProductFactory $factory): JsonResponse
+diff --git a/src/Entity/Product.php b/src/Entity/Product.php
+index fae4e78..d920a5b 100644
+--- a/src/Entity/Product.php
++++ b/src/Entity/Product.php
+@@ -27,6 +27,9 @@ class Product
+     #[ORM\JoinColumn(nullable: false)]
+     private Category $category;
+ 
++    #[ORM\Column(nullable: true)]
++    private ?\DateTimeImmutable $archivedAt = null;
++
+     public function __construct(string $name, int $priceInCents, Category $category)
+     {
+         $this->name = $name;
+@@ -53,4 +56,14 @@ class Product
+     {
+         return $this->category;
+     }
++
++    public function archive(): void
++    {
++        $this->archivedAt = new \DateTimeImmutable();
++    }
++
++    public function isArchived(): bool
++    {
++        return $this->archivedAt !== null;
++    }
+ }

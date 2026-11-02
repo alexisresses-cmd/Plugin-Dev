@@ -1,0 +1,66 @@
+name: evals
+
+# Appels modèle facturés : lancement manuel uniquement.
+on:
+  workflow_dispatch:
+    inputs:
+      case:
+        description: "Glob des cases (ex. symfony-*-review)"
+        default: "*"
+      runs:
+        description: "Runs par case"
+        default: "1"
+      ablation:
+        description: "with-without | none"
+        default: "none"
+      max_cost_usd:
+        description: "Plafond de coût"
+        default: "10"
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sandbox OS (requis pour accorder Bash aux runs)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -yq bubblewrap socat
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Installer Claude Code
+        run: npm install -g @anthropic-ai/claude-code@2.1.316
+
+      - name: Lancer les évals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EVAL_CASE: ${{ inputs.case }}
+          EVAL_RUNS: ${{ inputs.runs }}
+          EVAL_ABLATION: ${{ inputs.ablation }}
+          EVAL_MAX_COST: ${{ inputs.max_cost_usd }}
+        run: |
+          claude plugin eval . \
+            --case "$EVAL_CASE" \
+            --runs "$EVAL_RUNS" \
+            --ablation "$EVAL_ABLATION" \
+            --max-cost-usd "$EVAL_MAX_COST" \
+            --scaffold --trust-plugin --no-publish \
+            --allow-tools Write Edit Bash \
+            --json evals/results/ci.json \
+            --report evals/results/ci-report.html
+
+      - name: Publier les résultats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: evals/results/
