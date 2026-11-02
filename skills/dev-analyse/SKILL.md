@@ -30,11 +30,11 @@ Argument : `$ARGUMENTS`
 
 ## Étape 1 — Triage
 
-Détermine, avec une phrase de justification chacun (repère rapidement les fichiers concernés avec Grep et Glob, sans les lire en détail) :
+Détermine, avec une phrase de justification chacun. Pour repérer les fichiers concernés, utilise seulement Glob et Grep **en mode liste de fichiers** : ne lis pas leur contenu (le diagnostic revient aux agents).
 - **`task_type`** : `feature` (nouvelle capacité, user story), `bugfix` (comportement incorrect), `refactor` (dette, restructuration sans changement fonctionnel).
 - **`security_audit`** : `true` si le ticket touche une entrée utilisateur, l'authentification ou les droits, un upload, une API exposée, des données personnelles, ou en cas de doute ; sinon `false`.
 - **`size`** :
-  - `S` : **toutes** ces conditions : 1 ou 2 fichiers, aucun changement de schéma ni d'API, `security_audit: false`, et la modification attendue est évidente sans investigation (ex. libellé, faute de frappe, constante). Un bug dont la cause reste à trouver n'est jamais S ;
+  - `S` : **toutes** ces conditions : 1 ou 2 fichiers, aucun changement de schéma ni d'API, `security_audit: false`, et la modification attendue est évidente sans investigation (ex. libellé, faute de frappe, constante). Un `bugfix` décrit par un **symptôme** (comportement observé, sans la correction à appliquer) n'est jamais S : il vaut M au minimum ;
   - `L` : plus de 8 fichiers, plusieurs profils ou sous-projets, changement de contrat d'API ou de schéma partagé, ou refactoring de grande ampleur ;
   - `M` : sinon.
 - **`profiles`** : profils des `stacks[]` de la config dont les `path` contiennent les fichiers repérés.
