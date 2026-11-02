@@ -15,9 +15,7 @@ Tu implémentes le plan approuvé tâche par tâche, sans dériver du scope, san
 Chaque ligne que tu écris doit pouvoir se justifier. Avant d'écrire du nouveau code, cherche à réutiliser le code existant.
 
 > **Principes fondamentaux — non négociables**
-> Lis `${CLAUDE_PLUGIN_ROOT}/knowledge/core/clean-code.md` avant d'écrire la première ligne de code.
-> Ces principes sont ta référence pendant toute l'implémentation.
-> Les conventions spécifiques au projet sont dans `CLAUDE.md`.
+> Les règles se chargent à l'étape 0.2, avant la première ligne de code. Les conventions du projet (`CLAUDE.md`, code existant) priment.
 
 ---
 
@@ -43,14 +41,7 @@ Lis le fichier d'analyse entièrement : section Analyse + section Plan.
 
 ### 0.2 Lecture du contexte projet
 
-Lis `CLAUDE.md` à la racine du projet.
-Extrais et mémorise :
-- Conventions de code spécifiques au projet
-- Patterns et architecture attendus
-- Points d'attention particuliers
-
-Lis aussi `${CLAUDE_PLUGIN_ROOT}/knowledge/core/clean-code.md` pour les principes génériques PHP.
-Lis enfin `${CLAUDE_PLUGIN_ROOT}/knowledge/stacks/php-native.md` (standards PHP, sécurité, gestion d'erreurs) : `CLAUDE.md` prime en cas de conflit.
+Applique `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md` pour la section `Conventions`, puis lis `${CLAUDE_PLUGIN_ROOT}/knowledge/core/clean-code.md` en entier. Ces règles te servent pendant toute l'implémentation.
 
 ### 0.3 Vérifications préalables
 
@@ -151,118 +142,36 @@ Retourne **uniquement** le bilan structuré suivant (JSON) :
   "commits": ["abc1234 feat(scope): description"],
   "files_modified": ["path/to/file.php"],
   "out_of_scope": [],
-  "warnings": [],
-  "gate_criteria": {
-    "all_tasks_covered": true,
-    "working_tree_clean": true,
-    "no_debug_code": true,
-    "no_new_todos": true,
-    "conventions_respected": true,
-    "commits_format": true,
-    "no_out_of_scope_files": true
-  }
+  "warnings": []
 }
 ```
 
-Évalue chaque critère honnêtement.
+La gate G1 est évaluée ensuite par `devflow:gate-checker` : ne t'auto-évalue pas.
 
 ---
 
 ## Étape 4 — Gate G1 (mode interactif uniquement)
 
-> **En mode orchestrateur, cette étape est ignorée.** Le gate est géré par dev-cycle.
+> En mode orchestrateur, cette étape est ignorée : `/devflow:dev-cycle` gère la gate.
 
-### Critères du gate
+Compteur : `corrections = 0`.
 
-```
-GATE G1
-  ┌─────────────────────────────────────────────────────────┐
-  │  all_tasks_covered        → toutes les tâches du plan   │
-  │  working_tree_clean       → git status propre           │
-  │  no_debug_code            → pas de var_dump, dd(), etc. │
-  │  no_new_todos             → pas de TODO non assumés     │
-  │  conventions_respected    → PSR-12, conventions CLAUDE  │
-  │  commits_format           → format respecté             │
-  │  no_out_of_scope_files    → pas de fichiers hors plan   │
-  └─────────────────────────────────────────────────────────┘
-```
-
-Évalue chaque critère. Si tous sont ✅ → gate PASS directement.
-
-### Protocole de correction (si un critère échoue)
-
-**Compteur d'essais : max 2 corrections automatiques.**
-
-Pour chaque cycle :
-
-1. Spawn un agent de correction avec ces instructions :
-   ```
-   Tu es un développeur correctif.
-   Voici les critères en échec après l'implémentation :
-
-   {liste des critères KO avec détail}
-
-   Ta mission :
-   - Corriger chacun de ces points dans le code
-   - Ne rien modifier hors de ces corrections
-   - Committer via le skill devflow:dev-commit --auto (contexte : correction gate G1)
-   - Retourner la liste des corrections effectuées
-   ```
-
-2. Réévaluer les critères.
-
-Si le gate repasse ✅ → continuer.
-Si le gate échoue encore et que le compteur est épuisé → HALT.
+1. Lance `devflow:gate-checker` avec `gate: G1`, la branche de base et le chemin du fichier d'analyse.
+2. `PASS` → signal final.
+3. `FAIL` et `corrections < 2` → `corrections += 1`. Corrige **uniquement** les points listés dans `reasons`, sans rien modifier d'autre, commite via `devflow:dev-commit --auto -- correction gate G1`, puis retourne en 1.
+4. `FAIL` et `corrections = 2` → HALT.
 
 ### Signal final
 
-**Gate G1 ✅** :
-
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ GATE G1 — PASS
+{✅ GATE G1 — PASS {après N correction(s)} | 🛑 GATE G1 — HALT}
+   {critère}  {✅|❌|—}   (un par ligne, depuis `criteria`)
+   {pour HALT : raisons restantes}
 
-   all_tasks_covered        ✅
-   working_tree_clean       ✅
-   no_debug_code            ✅
-   no_new_todos             ✅
-   conventions_respected    ✅
-   commits_format           ✅
-   no_out_of_scope_files    ✅
-
-➡️  PRÊT POUR CONTEXT 3
-    Dans un nouveau contexte Claude Code :
-    /devflow:dev-review
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**Gate G1 ✅ après correction(s)** :
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ GATE G1 — PASS (après {N} correction(s) automatique(s))
-   Corrections appliquées :
-     • {correction 1}
-
-➡️  PRÊT POUR CONTEXT 3
-    Dans un nouveau contexte Claude Code :
-    /devflow:dev-review
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**Gate G1 ❌ (2 tentatives épuisées)** :
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🛑 GATE G1 — HALT
-   Les critères suivants sont toujours en échec
-   après 2 tentatives de correction automatique :
-
-     ❌ {critère 1} — {détail}
-     ❌ {critère 2} — {détail}
-
-   Action requise : corriger manuellement ces points
-   dans ce contexte avant de passer en Context 3.
+➡️  PASS : /devflow:dev-test puis /devflow:dev-review
+    (ou dans un nouveau contexte, pour un regard neuf)
+🛑 HALT : corrige manuellement ces points avant de continuer.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 

@@ -2,7 +2,7 @@
 name: dev-commit
 description: >
   Prépare et crée un commit propre au format du projet (lu dans CLAUDE.md). Seul point du
-  plugin où le format de commit est appliqué : tous les autres skills et workflows l'invoquent.
+  plugin où le format de commit est appliqué : tous les autres skills l'invoquent.
   Mode interactif par défaut (propose, attend la validation) ou --auto (commite sans
   confirmation et retourne le hash). Déclencher pour tout commit : "commite", "fais le commit".
 argument-hint: "[--auto] [ticket-id] [-- contexte]"
@@ -16,7 +16,7 @@ Tu es un développeur senior qui prépare un commit propre et bien documenté.
 
 `$ARGUMENTS`
 
-- `--auto` : mode non interactif (appel depuis un autre skill ou un workflow). Aucune question, aucune attente de validation.
+- `--auto` : mode non interactif (appel depuis un autre skill). Aucune question, aucune attente de validation.
 - `ticket-id` (optionnel) : identifiant du ticket à faire apparaître dans le message.
 - `-- contexte` (optionnel) : texte libre qui précise l'objet du commit (ex. `-- correction gate G1`).
 
