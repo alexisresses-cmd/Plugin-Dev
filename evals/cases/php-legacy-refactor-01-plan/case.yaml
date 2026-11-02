@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: php-legacy-refactor-01-plan
+description: "Ticket php-legacy-refactor-01 (frais de port), phase dev-plan"
+tags: [m3, legacy, refactor, plan]
+context:
+  scaffold_script: scaffold.sh

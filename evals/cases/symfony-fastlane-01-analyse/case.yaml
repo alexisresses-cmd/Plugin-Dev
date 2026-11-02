@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: symfony-fastlane-01-analyse
+description: "Ticket symfony-modern-fastlane-01 (faute de frappe), triage taille S"
+tags: [m3, fastlane, analyse]
+context:
+  scaffold_script: scaffold.sh

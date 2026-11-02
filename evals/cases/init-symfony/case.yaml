@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: init-symfony
+description: "/devflow:init --yes sur le projet Symfony avec un CLAUDE.md v0"
+tags: [m3, init]
+context:
+  scaffold_script: scaffold.sh

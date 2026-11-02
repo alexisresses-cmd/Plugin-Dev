@@ -1,0 +1,30 @@
+schema_version: 1
+
+stacks:
+  - path: ./
+    profile: symfony
+    mode: modern
+
+tooling:
+  test: null
+  lint: null
+  static_analysis: null
+  static_analysis_baseline: null
+
+git:
+  base_branch: main
+  branch_prefix: feat/
+  commit_format: conventional
+  ticket_ref_format: "#{id}"
+  main_reviewer: "@alexis"
+
+issue_tracker: text
+
+pipeline:
+  fast_lane: true
+  checkpoints: false
+  simplifier: false
+
+hooks:
+  block_secrets: true
+  no_comments: false
