@@ -2,7 +2,38 @@
 
 > Plugin Claude Code multi-stack : de l'analyse du ticket à la PR, avec des agents qui adaptent leurs règles à la stack, à la maturité du projet et au type de tâche.
 
-**Statut :** en cours de développement (jalon M0 — préparation). Rien n'est installable pour l'instant.
+**Statut :** v0.1.0 (jalon M1). Même périmètre que le pipeline PHP d'origine, empaqueté en plugin. Le multi-stack arrive aux jalons M3 à M5.
+
+## Installation
+
+```bash
+/plugin marketplace add alexisresses-cmd/Plugin-Dev
+/plugin install devflow@alexis-plugins
+```
+
+En local, depuis un clone : `/plugin marketplace add ./` puis `/plugin install devflow@alexis-plugins`.
+
+## Démarrage
+
+```bash
+/devflow:dev-analyse https://github.com/owner/repo/issues/42   # analyse multi-agents
+/devflow:dev-plan                                             # plan, branche, draft PR, mode recommandé
+/devflow:dev-cycle analysis/20261102-mon-ticket.md            # mode automatisé
+```
+
+Mode séquentiel : `/devflow:dev-implement` → `/devflow:dev-test` → `/devflow:dev-review` → `/devflow:dev-pr`.
+
+## Contenu
+
+| Type | Éléments |
+|---|---|
+| Skills | `dev-analyse`, `dev-plan`, `dev-cycle`, `dev-implement`, `dev-test`, `dev-review`, `challenge-review`, `dev-pr`, `dev-commit`, `review-return`, `dev-copilot` |
+| Commande | `dev-branch` |
+| Workflows | `dev-cycle-run`, `dev-review-run` (lancés par les skills `dev-cycle` et `dev-review`) |
+| Agent | `dev-simplifier` |
+| Hooks | blocage des secrets, blocage des commandes dangereuses, signalement des commentaires superflus |
+
+La configuration du projet se lit dans son `CLAUDE.md` (`BRANCH_PREFIX`, `COMMIT_FORMAT`, `ISSUE_TRACKER`, `MAIN_REVIEWER`), comme en v0. Elle passera dans `.devflow/config.yml` au M3.
 
 ## Stacks visées (v1)
 
