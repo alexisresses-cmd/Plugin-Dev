@@ -14,38 +14,45 @@ Tu es l'**orchestrateur** de l'analyse. Tu fais le triage, tu lances les agents,
 
 > **Phase lecture seule.** Aucun fichier n'est modifié, sauf le fichier d'analyse final.
 
-## Étape 0 — Récupération du ticket
+## Étape 0 — Configuration et ticket
+
+Lis `.devflow/config.yml` (puis `.devflow/config.local.yml`, qui l'emporte). Absent : demande de lancer `/devflow:init` et arrête-toi.
 
 Argument : `$ARGUMENTS`
 
 | Format | Action |
 |---|---|
 | URL GitHub Issues `https://github.com/{owner}/{repo}/issues/{id}` | `gh issue view {id} --repo {owner}/{repo}` |
-| Numéro seul + `ISSUE_TRACKER: github` dans `CLAUDE.md` | `gh issue view {id}` |
+| Numéro seul + `issue_tracker: github` | `gh issue view {id}` |
 | URL Trello | WebFetch, extraire titre et description |
 | Texte | tel quel ; extraire un identifiant s'il y en a un (`#42`, `TICKET-123`) |
 | Rien | demande le ticket et arrête-toi |
 
 ## Étape 1 — Triage
 
-Détermine, avec une phrase de justification chacun :
+Détermine, avec une phrase de justification chacun (repère rapidement les fichiers concernés avec Grep et Glob, sans les lire en détail) :
 - **`task_type`** : `feature` (nouvelle capacité, user story), `bugfix` (comportement incorrect), `refactor` (dette, restructuration sans changement fonctionnel).
 - **`security_audit`** : `true` si le ticket touche une entrée utilisateur, l'authentification ou les droits, un upload, une API exposée, des données personnelles, ou en cas de doute ; sinon `false`.
+- **`size`** :
+  - `S` : **toutes** ces conditions : 1 ou 2 fichiers, aucun changement de schéma ni d'API, `security_audit: false`, et la modification attendue est évidente sans investigation (ex. libellé, faute de frappe, constante). Un bug dont la cause reste à trouver n'est jamais S ;
+  - `L` : plus de 8 fichiers, plusieurs profils ou sous-projets, changement de contrat d'API ou de schéma partagé, ou refactoring de grande ampleur ;
+  - `M` : sinon.
+- **`profiles`** : profils des `stacks[]` de la config dont les `path` contiennent les fichiers repérés.
 
 ## Étape 2 — Agents en parallèle
 
 Lance **dans un seul message** (outil Agent, appels parallèles) :
 
-| Agent (`subagent_type`) | Condition |
-|---|---|
-| `devflow:business-analyst` | toujours |
-| `devflow:code-mapper` | toujours |
-| `devflow:architect` | toujours |
-| `devflow:security-analyst` | si `security_audit: true` |
+| Agent (`subagent_type`) | S | M | L |
+|---|---|---|---|
+| `devflow:code-mapper` | ✅ | ✅ | ✅ |
+| `devflow:business-analyst` | — | ✅ | ✅ |
+| `devflow:architect` | — | ✅ | ✅ |
+| `devflow:security-analyst` | si `security_audit` | si `security_audit` | si `security_audit` |
 
-Message à chaque agent : le texte complet du ticket, `task_type`, et la consigne « Applique ta procédure et réponds au format demandé ». Ne leur transmets pas `CLAUDE.md` : ils le lisent eux-mêmes.
+Message à chaque agent : le texte complet du ticket, `task_type`, `size`, et la consigne « Applique ta procédure et réponds au format demandé ». Ils lisent eux-mêmes la configuration et les règles.
 
-Si un agent échoue ou ne respecte pas son format, note-le dans la synthèse et continue.
+Si un agent échoue ou ne respecte pas son format, note-le dans la synthèse et continue. Si la cartographie contredit la taille estimée (ex. un ticket S qui touche 5 fichiers), corrige `size` et, si elle passe à M ou L, lance les agents manquants.
 
 ## Étape 3 — Fichier d'analyse
 
@@ -57,6 +64,8 @@ ticket: {URL ou identifiant}
 title: {titre}
 date: {YYYY-MM-DD}
 task_type: {feature|bugfix|refactor}
+size: {S|M|L}
+profiles: [{profil}, …]
 security_audit: {true|false}
 status: analysed
 ---
@@ -67,13 +76,13 @@ status: analysed
 {texte du ticket}
 
 ## Vision métier
-{sortie de business-analyst}
+{sortie de business-analyst, ou « Taille S : non requise »}
 
 ## Vision code
 {sortie de code-mapper}
 
 ## Vision architecture
-{sortie de architect}
+{sortie de architect, ou « Taille S : non requise »}
 
 ## Vision sécurité
 {sortie de security-analyst, ou « Audit non requis : {justification du triage} »}
@@ -96,7 +105,7 @@ Copie les sorties des agents telles quelles : ne les reformule pas.
 N'affiche **pas** les rapports complets dans la conversation (ils sont dans le fichier). Affiche :
 
 ```
-📋 ANALYSE — {titre} | {task_type} | audit sécu : {oui/non}
+📋 ANALYSE — {titre} | {task_type} | taille {size} | {profils} | audit sécu : {oui/non}
 
 Reformulation : …
 Approche recommandée : …

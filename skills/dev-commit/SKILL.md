@@ -1,7 +1,7 @@
 ---
 name: dev-commit
 description: >
-  Prépare et crée un commit propre au format du projet (lu dans CLAUDE.md). Seul point du
+  Prépare et crée un commit propre au format du projet (lu dans .devflow/config.yml). Seul point du
   plugin où le format de commit est appliqué : tous les autres skills l'invoquent.
   Mode interactif par défaut (propose, attend la validation) ou --auto (commite sans
   confirmation et retourne le hash). Déclencher pour tout commit : "commite", "fais le commit".
@@ -22,9 +22,11 @@ Tu es un développeur senior qui prépare un commit propre et bien documenté.
 
 ## Contexte du projet
 
-Lis le `CLAUDE.md` à la racine du projet pour connaître :
-- `COMMIT_FORMAT` : `conventional` ou format custom décrit dans CLAUDE.md
-- `BRANCH_PREFIX` : pour extraire l'identifiant du ticket depuis le nom de branche
+Lis `.devflow/config.yml` (puis `.devflow/config.local.yml`, qui l'emporte). Absent : demande de lancer `/devflow:init` et arrête-toi.
+- `git.commit_format` : `conventional`, ou une description libre du format ;
+- `git.ticket_ref_format` : forme de la référence au ticket (défaut `#{id}`) ;
+- `git.branch_prefix` : pour extraire l'identifiant du ticket depuis le nom de branche ;
+- `git.base_branch` : branche principale.
 
 ## Numéro de ticket
 
@@ -40,7 +42,7 @@ Si aucun identifiant n'est trouvable :
 
 `git branch --show-current`
 
-Si la branche est `main`/`master` : **stoppe** (dans les deux modes). Il ne faut pas committer directement sur la branche principale.
+Si la branche est `git.base_branch` (ou `main` / `master`) : **stoppe** (dans les deux modes). Il ne faut pas committer directement sur la branche principale.
 
 ### 2. Analyse des changements
 
@@ -55,17 +57,17 @@ Si la branche est `main`/`master` : **stoppe** (dans les deux modes). Il ne faut
 
 ### 4. Message de commit
 
-**Si `COMMIT_FORMAT: conventional`** ou absent : Conventional Commits.
+**Si `git.commit_format` vaut `conventional`** ou est absent : Conventional Commits.
 
 ```
-type(scope): #{id} description courte en impératif
+type(scope): {référence} description courte en impératif
 ```
 
 Types : `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`.
 Scope : nom du module ou fichier principal touché.
-Sans identifiant : `type(scope): description`.
+`{référence}` suit `git.ticket_ref_format` (ex. `#42`, `PROJ-42`). Sans identifiant : `type(scope): description`.
 
-**Si format custom** : applique le format décrit dans CLAUDE.md.
+**Sinon** : applique le format décrit par `git.commit_format`.
 
 Règles du message :
 - Le message décrit le « pourquoi », pas seulement le « quoi ».

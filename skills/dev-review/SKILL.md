@@ -14,7 +14,7 @@ Tu es l'**orchestrateur** de la revue. Les agents lisent le diff eux-mêmes : ne
 
 ## Étape 0 — Contexte
 
-- Base : `main` si elle existe, sinon `master`.
+- Lis `.devflow/config.yml` (puis `.devflow/config.local.yml`, qui l'emporte). Absent : demande de lancer `/devflow:init` et arrête-toi. Base : `git.base_branch`.
 - Fichier d'analyse : `$ARGUMENTS`, sinon celui de la session, sinon le plus récent. Lis seulement son en-tête (`task_type`, `security_audit`).
 - `git diff <base>...HEAD --stat`. Diff vide → signale-le et arrête-toi.
 - Compteur de corrections : `corrections = 0`.

@@ -1,5 +1,5 @@
 ---
-description: Crée manuellement la branche Git d'un ticket selon BRANCH_PREFIX (secours si /devflow:dev-plan ne l'a pas fait)
+description: Crée manuellement la branche Git d'un ticket selon git.branch_prefix (secours si /devflow:dev-plan ne l'a pas fait)
 argument-hint: "<ticket-id> [sujet]"
 ---
 
@@ -16,13 +16,12 @@ $ARGUMENTS
 
 ## Convention de nommage
 
-Lis le `CLAUDE.md` à la racine et extrais la valeur de `BRANCH_PREFIX`.
-Si `BRANCH_PREFIX` est absent, utiliser `feat/` par défaut.
+Lis `.devflow/config.yml` (puis `.devflow/config.local.yml`, qui l'emporte). Absent : demande de lancer `/devflow:init` et arrête-toi. Utilise `git.branch_prefix` (défaut `feat/`) et `git.base_branch` (défaut `main`).
 
 Format du nom de branche :
 
 ```
-{BRANCH_PREFIX}{ticket-id}-{slug-kebab-case}
+{branch_prefix}{ticket-id}-{slug-kebab-case}
 ```
 
 Exemples selon la config :
@@ -36,9 +35,9 @@ Règles :
 
 ## Ce que tu dois faire
 
-1. Lire `CLAUDE.md` pour extraire `BRANCH_PREFIX`
+1. Lire la configuration (`git.branch_prefix`, `git.base_branch`)
 2. Vérifier la branche courante : `git branch --show-current`
-3. Si on n'est pas sur `main`/`master`, afficher un avertissement et demander confirmation
+3. Si on n'est pas sur `git.base_branch`, afficher un avertissement et demander confirmation
 4. Faire un `git pull` pour être à jour
 5. Proposer un nom de branche basé sur l'argument et la convention
 6. Créer et checkout la branche

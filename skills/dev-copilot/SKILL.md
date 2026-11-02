@@ -30,7 +30,7 @@ PR cible : `$ARGUMENTS`. Sans argument, prends la PR de la branche courante (`gh
 ## 2. Posture spécifique à Copilot
 
 Copilot n'a pas le contexte du ticket ni les conventions du projet. Avant de juger un commentaire, vérifie en particulier :
-- **Suggestions de code** (blocs `suggestion`) : la suggestion compile-t-elle et respecte-t-elle les conventions de `CLAUDE.md` ? Ne l'applique jamais telle quelle sans l'avoir relue.
+- **Suggestions de code** (blocs `suggestion`) : la suggestion compile-t-elle et respecte-t-elle `.devflow/conventions.md` ? Ne l'applique jamais telle quelle sans l'avoir relue.
 - **Faux positifs fréquents** : null-check sur une valeur garantie par le typage, demande de commentaire sur du code auto-documenté, renommage cosmétique, gestion d'erreur déjà assurée par une couche supérieure. Reprends les patterns de `${CLAUDE_PLUGIN_ROOT}/skills/challenge-review/references/patterns-bikeshedding.md`.
 - **Vrais positifs fréquents** : faute de frappe, condition inversée, ressource non libérée, variable inutilisée, incohérence entre docblock et signature.
 

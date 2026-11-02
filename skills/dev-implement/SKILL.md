@@ -2,7 +2,7 @@
 name: dev-implement
 description: >
   Implémente un plan technique tâche par tâche en appliquant clean code, SOLID, et les
-  conventions du projet (lues depuis CLAUDE.md). Prend en entrée le fichier analysis/ généré
+  conventions du projet (.devflow/). Prend en entrée le fichier analysis/ généré
   par /devflow:dev-analyse + /devflow:dev-plan (Context 1). Valide chaque tâche avant la suivante, propose
   des commits intermédiaires. Déclencher dans Context 2 avec le chemin du fichier d'analyse.
   Supporte --orchestrator pour usage autonome dans un pipeline automatisé.
@@ -15,7 +15,7 @@ Tu implémentes le plan approuvé tâche par tâche, sans dériver du scope, san
 Chaque ligne que tu écris doit pouvoir se justifier. Avant d'écrire du nouveau code, cherche à réutiliser le code existant.
 
 > **Principes fondamentaux — non négociables**
-> Les règles se chargent à l'étape 0.2, avant la première ligne de code. Les conventions du projet (`CLAUDE.md`, code existant) priment.
+> Les règles se chargent à l'étape 0.2, avant la première ligne de code. Les conventions du projet (`.devflow/conventions.md`, code existant) priment.
 
 ---
 
@@ -51,6 +51,8 @@ Vérifier les modifications en cours : `git status`
 Extrais le nom de branche attendu depuis le fichier d'analyse.
 Si on n'est pas sur la bonne branche — stopper et corriger d'abord.
 
+**Refactor (`task_type: refactor`)** : aucune modification de code de production avant la gate **G0**. En mode interactif, si les tests de caractérisation n'existent pas encore, lance `devflow:test-writer` avec `characterization:` et les fichiers de production du plan, commite les tests via `devflow:dev-commit`, puis lance `devflow:gate-checker` (`gate: G0`). `FAIL` → arrête-toi en expliquant ce qui manque. En mode orchestrateur, `/devflow:dev-cycle` a déjà passé G0.
+
 **Mode interactif** : si des modifications non committées existent — demander quoi en faire avant de continuer.
 **Mode orchestrateur** : si des modifications non committées existent — les logger dans `bilan.warnings[]` et continuer.
 
@@ -82,7 +84,7 @@ Si la tâche révèle quelque chose d'inattendu qui remet en question le plan :
 ### Pendant le code
 
 Applique les principes de `clean-code.md`.
-Respecte les conventions spécifiques du `CLAUDE.md` du projet.
+Respecte les règles chargées par le RESOLVER, dans son ordre de priorité.
 
 **Règle d'or** : si tu dois expliquer pourquoi le code est écrit ainsi dans un commentaire, c'est que le code n'est pas assez clair — réécris-le d'abord.
 
@@ -128,7 +130,7 @@ Points d'attention pour la review :
   [Ce qui mérite une attention particulière]
 ```
 
-Si l'utilisateur le demande (ou si `CLAUDE.md` contient `SIMPLIFIER: true`), lance l'agent `devflow:dev-simplifier` sur la branche, présente son bilan, puis commite ses modifications via `devflow:dev-commit`.
+Si l'utilisateur le demande (ou si `pipeline.simplifier` vaut `true`), lance l'agent `devflow:dev-simplifier` sur la branche, présente son bilan, puis commite ses modifications via `devflow:dev-commit`.
 
 Puis passe à l'**Étape 4** (Gate G1).
 
