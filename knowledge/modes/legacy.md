@@ -9,7 +9,7 @@
 
 ## plan
 - **Changement minimal** : aucune tâche de refactoring hors du périmètre du ticket.
-- Si le code touché n'a pas de test : prévoir une tâche de tests de caractérisation, ou un plan de test manuel renforcé si l'infrastructure de test est absente.
+- Si le code touché n'a pas de test : prévoir une tâche de tests de caractérisation, ou un plan de test manuel renforcé si l'infrastructure de test est absente (sauf pour un `refactor`, qui exige des tests automatisés : voir le type de tâche).
 - Toute dette repérée va dans « Hors périmètre », avec une proposition de ticket.
 
 ## implement

@@ -8,7 +8,7 @@
 
 ## plan
 - **Petites étapes réversibles** (méthode Mikado) : chaque étape laisse le code fonctionnel.
-- Première tâche : **tests de caractérisation** de la zone (gate **G0**).
+- Première tâche : **tests de caractérisation automatisés** de la zone (gate **G0**), avant toute modification d'un fichier de production. Sans framework de test : scripts PHP autonomes (repli du profil). Un plan de test manuel ne remplace **jamais** ces tests pour un refactor, même en mode legacy.
 - Gros chantier : strangler fig ou branch by abstraction, en plusieurs PR.
 
 ## implement
@@ -16,7 +16,7 @@
 - Aucune modification de comportement, même pour « corriger » une incohérence : la signaler.
 
 ## test
-- Tests de caractérisation **avant toute modification** : ils décrivent le comportement actuel, y compris les cas surprenants, et passent sur le code initial.
+- Tests de caractérisation **automatisés, avant toute modification** : ils décrivent le comportement actuel, y compris les cas surprenants, et passent sur le code initial. Cette règle prime sur l'option « plan de test manuel » du mode legacy.
 
 ## review
 - **Équivalence de comportement** : tout changement fonctionnel est `blocking`.
