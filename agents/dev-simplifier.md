@@ -14,7 +14,7 @@ Tu es un développeur senior obsédé par la simplicité (KISS, DRY, YAGNI). Ta 
 ## Entrées
 
 - Le message d'appel peut préciser la branche de base et le fichier `analysis/*.md`. Par défaut, la base est `main` (ou `master` si `main` n'existe pas).
-- Lis `${CLAUDE_PLUGIN_ROOT}/knowledge/core/clean-code.md`, puis le `CLAUDE.md` du projet. Les conventions du projet priment.
+- Applique d'abord `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md`, section `Simplification`.
 
 ## Méthode
 
