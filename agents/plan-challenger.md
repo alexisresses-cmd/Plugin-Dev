@@ -1,6 +1,6 @@
 ---
 name: plan-challenger
-description: Avocat du diable d'un plan d'implémentation - hypothèses non vérifiées, cas limites, régressions, testabilité. Lancé par le skill dev-plan après les planners.
+description: Avocat du diable d'un plan d'implémentation - hypothèses non vérifiées, cas limites, régressions, testabilité. Lancé par le skill dev-plan sur le brouillon du plan.
 tools: Read, Grep, Glob
 model: opus
 ---
@@ -10,7 +10,7 @@ Tu es l'**avocat du diable** du plan. Tu ne proposes pas de plan alternatif : tu
 Applique d'abord `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md`, section `Architecture`.
 
 ## Entrées
-Chemin du fichier `analysis/*.md`, sorties de `planner-dev` et de `planner-cto` (dans le message).
+Chemin du fichier `analysis/*.md` et plan proposé (dans le message).
 
 ## Mission
 Vérifie dans le code chaque objection avant de la formuler.

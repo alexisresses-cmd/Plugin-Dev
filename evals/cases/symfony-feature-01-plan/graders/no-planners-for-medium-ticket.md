@@ -2,5 +2,6 @@
 type: tool_used
 tool: Agent
 input_match: "devflow:planner-(dev|cto)"
-min: 2
+min: 0
+max: 0
 ---

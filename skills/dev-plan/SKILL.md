@@ -1,8 +1,8 @@
 ---
 name: dev-plan
 description: >
-  Transforme une analyse de ticket en plan validé : planners en parallèle (développeur, CTO),
-  puis challenger du plan, synthèse et validation par l'utilisateur. Après validation, crée la
+  Transforme une analyse de ticket en plan validé : brouillon du plan, challenge par un agent
+  dédié, puis validation par l'utilisateur. Après validation, crée la
   branche et la draft PR, complète le fichier analysis/ et recommande un mode d'exécution.
   Déclencher après /devflow:dev-analyse.
 argument-hint: "[analysis/YYYYMMDD-slug.md]"
@@ -10,7 +10,7 @@ argument-hint: "[analysis/YYYYMMDD-slug.md]"
 
 # dev-plan — Planification d'un ticket
 
-Tu es l'**orchestrateur** de la planification. Les agents proposent et challengent ; toi, tu fais la synthèse, tu obtiens la validation et tu agis sur git et GitHub.
+Tu es l'**orchestrateur** de la planification. Tu rédiges le brouillon, un agent le challenge, tu obtiens la validation et tu agis sur git et GitHub.
 
 ## Étape 0 — Fichier d'analyse
 
@@ -18,22 +18,34 @@ Dans l'ordre : `$ARGUMENTS` ; le fichier créé par `/devflow:dev-analyse` dans 
 
 Si la synthèse indique **Feu vert : ❌**, rappelle les questions bloquantes et arrête-toi.
 
-## Étape 1 — Planners en parallèle
+## Étape 1 — Brouillon du plan
 
-Lance **dans un seul message** :
-- `devflow:planner-dev`
-- `devflow:planner-cto`
+L'analyse contient déjà la cartographie du code et l'architecture recommandée. Rédige toi-même le brouillon, sans relire tout le code (vérifie seulement un point précis si l'analyse est ambiguë).
 
-Message : « Fichier d'analyse : {chemin}. Applique ta procédure et réponds au format demandé. »
+**Exception (tickets lourds)** : si la synthèse estime le ticket Complexe, ou s'il touche plus de 8 fichiers, délègue le brouillon à `devflow:planner-dev` et `devflow:planner-cto`, lancés **en parallèle**, puis fusionne leurs sorties. Cette règle sera remplacée par le triage S/M/L au M3.
+
+Contenu du brouillon :
+- **Tâches** dans l'ordre d'implémentation (données et migrations d'abord, contrôleur et vue ensuite), 8 au maximum, chacune concrète et committable seule si possible : fichiers, nature (créer / modifier / supprimer), complexité. Pour un `bugfix`, la première tâche est un test qui reproduit le bug. Pour un `refactor`, ce sont les tests de caractérisation.
+- **Dépendances** entre tâches.
+- **Pièges** d'implémentation, tirés des risques de l'analyse.
+- **Hors périmètre**, précis.
+- **Estimation globale** : Simple / Moyenne / Complexe.
+- **Mode recommandé** :
+
+  | Signal | Mode |
+  |---|---|
+  | Complexité Complexe, risque sécu 🔴/🟠, code partagé ou interface publique touchés, plus de 5 fichiers | `dev-cycle --checkpoints` |
+  | Complexité Simple ou Moyenne, risque sécu 🟢 ou absent | `dev-cycle` |
+  | Complexité Moyenne, risque sécu 🟡, besoin de valider chaque étape | séquentiel |
 
 ## Étape 2 — Challenge
 
-Lance `devflow:plan-challenger` avec le chemin du fichier d'analyse et les deux sorties précédentes, copiées telles quelles.
+Lance `devflow:plan-challenger` avec le chemin du fichier d'analyse et le brouillon, copié tel quel.
 
 ## Étape 3 — Synthèse et validation
 
 Construis le plan final :
-- tâches de `planner-dev`, ajustées selon les arbitrages de `planner-cto` et les objections 🔴 / 🟠 du challenger que tu juges fondées ;
+- le brouillon, ajusté selon les objections 🔴 / 🟠 du challenger que tu juges fondées ;
 - pour chaque objection non retenue, une justification d'une ligne.
 
 Présente :
