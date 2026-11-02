@@ -28,7 +28,8 @@ evals/
   - `regex` : critère vérifiable textuellement (y compris une absence) ;
   - `llm` : critère qualitatif, rédigé en conditions PASS / FAIL précises.
 - Les projets témoins fictifs sont des **fixtures statiques** copiées par `scaffold.sh` (rapide, reproductible, sans réseau).
-- Commande de référence : `claude plugin eval . --scaffold --trust-plugin --no-publish [--case <glob>] [--ablation none]`.
+- Commande de référence : `claude plugin eval . --scaffold --trust-plugin --no-publish --allow-tools Write [--case <glob>] [--ablation none]`.
+- Une commande `/devflow:…` écrite dans le prompt n'apparaît pas comme appel à l'outil `Skill` : on vérifie l'exécution du skill par un effet observable (ex. `tool_used: Read` sur ses fichiers de prompts).
 - `--ablation none` pour les cases qui invoquent explicitement `/devflow:…` (la comparaison sans plugin n'a pas de sens). Comparaison activée pour les cases en langage naturel et les hooks.
 
 ## Limites connues

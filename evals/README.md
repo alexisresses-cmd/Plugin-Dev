@@ -21,10 +21,12 @@ evals/
 claude plugin eval . --scaffold --trust-plugin --no-publish
 
 # Un sous-ensemble, sans run de comparaison sans plugin
-claude plugin eval . --case 'symfony-*' --scaffold --trust-plugin --no-publish --ablation none
+claude plugin eval . --case 'symfony-*' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write
 ```
 
-`--scaffold` est nécessaire pour construire le projet témoin. Les cases qui accordent `Bash` exigent le sandbox OS (bubblewrap + socat sous Linux).
+`--scaffold` est nécessaire pour construire le projet témoin. `--allow-tools Write` est nécessaire aux cases qui produisent un fichier (`analysis/…`).
+
+Une commande `/devflow:…` écrite dans le prompt est développée directement, sans passer par l'outil `Skill`. Pour vérifier qu'un skill a bien tourné, on contrôle donc un effet observable (ex. lecture de ses prompts avec `tool_used: Read`). Les cases qui accordent `Bash` exigent le sandbox OS (bubblewrap + socat sous Linux).
 
 ## Format d'un ticket
 
