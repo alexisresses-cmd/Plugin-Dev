@@ -1,35 +1,57 @@
-# RESOLVER — Chargement des règles (version M2)
+# RESOLVER — Chargement des règles
 
-> Procédure commune à tous les agents devflow. Chaque agent l'applique **avant sa mission**, pour la section qui le concerne (`<SECTION>`, indiquée dans son prompt).
-> Version M2 : périmètre PHP uniquement, configuration lue dans `CLAUDE.md`. Au M3, cette procédure passera à `.devflow/config.yml` et aux profils / modes / types de tâche (SPEC § 3.2) ; les agents, eux, ne changeront pas.
+> Procédure commune aux agents et aux skills devflow (SPEC § 3.2). Chaque appelant l'applique **avant sa mission**, pour **son rôle** dans la table ci-dessous.
+> Objectif : économiser les tokens. On ne lit jamais un fichier de règles en entier, seulement les sections de son rôle.
 
-## Étapes
+`K` = `${CLAUDE_PLUGIN_ROOT}/knowledge`
 
-1. **Projet** : lis le `CLAUDE.md` à la racine du projet, s'il existe. Retiens les conventions, l'architecture, les pièges connus et les points d'attention sécurité.
-2. **Ticket** : si l'appelant fournit un fichier `analysis/*.md`, lis son en-tête (`task_type`, `security_audit`) et les sections utiles à ta mission. Ne relis pas ce que l'appelant t'a déjà transmis dans son message.
-3. **Règles de stack** : dans `${CLAUDE_PLUGIN_ROOT}/knowledge/stacks/php-native.md`, lis **uniquement** les parties liées à ta section :
+## Table des rôles
 
-   | `<SECTION>` | Parties de `php-native.md` à lire |
-   |---|---|
-   | Conventions | Standards, PSR-12, Typage, Autoloading |
-   | Architecture | Autoloading PSR-4, Gestion des erreurs |
-   | Testing | (aucune ; voir l'agent) |
-   | Security | Sécurité PHP — Checklist obligatoire |
-   | Data & migrations | Injection SQL, Gestion des erreurs |
-   | Simplification | Typage |
-   | Tooling | Standards |
+| Rôle | Section de profil (`K/stacks/*.md`) | Section de mode et de tâche (`K/modes/*.md`, `K/tasks/*.md`) | `K/core/clean-code.md` |
+|---|---|---|---|
+| `business-analyst` | — | `analyse` | non |
+| `code-mapper` | Architecture | `analyse` | non |
+| `architect` | Architecture | `analyse` | non |
+| `security-analyst` | Security | `analyse` | non |
+| `dev-plan`, `planner-dev`, `planner-cto`, `plan-challenger` | Architecture, Data & migrations | `plan` | non |
+| `dev-implement` | Conventions, Architecture | `implement` | oui |
+| `test-writer` | Testing | `test` | non |
+| `reviewer-quality` | Conventions | `review` | oui |
+| `reviewer-bugs` | Data & migrations | `review` | non |
+| `reviewer-security` | Security | `review` | non |
+| `review-challenger` | Conventions | `review` | non |
+| `gate-checker` | Testing, Tooling | `gates` | non |
+| `dev-simplifier` | Simplification | `simplifier` | oui |
+| `dev-pr` | — | `pr` | non |
 
-4. **Principes génériques** : lis `${CLAUDE_PLUGIN_ROOT}/knowledge/core/clean-code.md` seulement si ta section est `Conventions` ou `Simplification`.
-5. **Priorité en cas de conflit** : `CLAUDE.md` du projet > `php-native.md` > `clean-code.md`. Les conventions observées dans le code existant priment sur les conventions idéales.
+## Procédure
 
-## Erreurs
+1. **Configuration.** Lis `.devflow/config.yml`, puis `.devflow/config.local.yml` s'il existe : ses clés remplacent celles de `config.yml` (fusion profonde).
+   - Absente : un **skill** s'arrête et demande de lancer `/devflow:init`. Un **agent** renvoie `{ "error": "missing_config", "detail": "lancer /devflow:init" }` et s'arrête.
+2. **Type de tâche.** Lis `task_type` (et `size`) dans l'en-tête du fichier `analysis/*.md` fourni, sinon dans le message de l'appelant. À défaut : `feature`.
+3. **Profils concernés.** Prends les fichiers du périmètre : diff de la branche (`git diff <base>...HEAD --name-only`), fichiers listés dans l'analyse, ou fichiers que tu vas toucher. Associe chaque fichier au bloc `stacks[]` dont le `path` est le plus long préfixe du fichier ; à défaut, au premier bloc. Un ticket peut concerner plusieurs profils : traite chacun.
+4. **Chaîne d'héritage.** Pour chaque profil, lis l'en-tête de `K/stacks/<profil>.md` (`extends`), puis remonte jusqu'à `extends: null`. Pour chaque section de ton rôle, lis-la **du parent vers l'enfant** :
+   - `_inherit_` dans l'enfant : la section du parent s'applique sans ajout ;
+   - un point de l'enfant qui dit « remplace » annule le point correspondant du parent ; sinon, l'enfant **complète** le parent.
+5. **Mode et tâche.** Lis la section de ton rôle (`## <phase>`) dans `K/modes/<mode du profil>.md` et dans `K/tasks/<task_type>.md`.
+6. **Projet.** Lis `.devflow/conventions.md` (en entier) et, pour les rôles `analyse` et `plan`, `.devflow/project-map.md` s'ils existent.
+7. **Principes génériques.** Si la colonne `clean-code` vaut « oui », lis `K/core/clean-code.md`.
+8. **Priorité en cas de conflit**, de la plus forte à la plus faible (SPEC D2) :
+   1. `.devflow/conventions.md`
+   2. `K/tasks/<type>.md`
+   3. `K/modes/<mode>.md`
+   4. `K/stacks/<profil>.md` (enfant, puis parent)
+   5. `K/core/clean-code.md`
 
-- `CLAUDE.md` absent : continue en appliquant `php-native.md`, et signale-le dans ta sortie (`warnings`).
-- Fichier d'analyse attendu mais absent : renvoie une erreur structurée à l'appelant, sans deviner son contenu :
+   En mode `legacy`, **les conventions observées dans le code priment sur les conventions idéales** de la stack.
 
-  ```json
-  { "error": "missing_input", "detail": "analysis file not found: <chemin>" }
-  ```
+## Lire une seule section
+
+Repère les titres avec Grep (`^## `, option `-n`) sur le fichier, puis lis avec Read de la ligne du titre jusqu'à la ligne précédant le titre suivant (`offset` / `limit`). N'utilise jamais Read sans `limit` sur un fichier de `K/stacks`, `K/modes` ou `K/tasks`.
+
+## Traçabilité
+
+Dans ta sortie, renseigne `rule_source` (findings) ou cite la source d'une règle quand elle tranche une décision : `conventions`, `task`, `mode`, `stack`, `core`.
 
 ## Règles communes à tous les agents
 

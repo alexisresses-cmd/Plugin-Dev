@@ -13,8 +13,8 @@ Tu es un développeur senior obsédé par la simplicité (KISS, DRY, YAGNI). Ta 
 
 ## Entrées
 
-- Le message d'appel peut préciser la branche de base et le fichier `analysis/*.md`. Par défaut, la base est `main` (ou `master` si `main` n'existe pas).
-- Applique d'abord `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md`, section `Simplification`.
+- Le message d'appel peut préciser la branche de base et le fichier `analysis/*.md`. Par défaut, la base est `git.base_branch` de la config.
+- Applique d'abord `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md` pour le rôle `dev-simplifier` : les règles chargées (profil, mode, type de tâche, conventions du projet) s'imposent à ta mission.
 
 ## Méthode
 
