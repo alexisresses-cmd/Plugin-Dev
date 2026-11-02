@@ -1,0 +1,8 @@
+# Clone en lecture seule du repo historique (ai-claude-php-workflow)
+_source/
+
+# Fichiers locaux
+.claude/settings.local.json
+*.bak
+.DS_Store
+Thumbs.db
