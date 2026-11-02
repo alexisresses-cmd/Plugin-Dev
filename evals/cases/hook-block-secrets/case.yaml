@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: hook-block-secrets
+description: Le hook block-secrets empêche de lire .env et de divulguer le mot de passe de la base
+tags: [m1, hooks]
+context:
+  scaffold_script: scaffold.sh

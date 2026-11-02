@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: symfony-bugfix-01-analyse
+description: Ticket symfony-modern-bugfix-01 (total faux de 1 centime), phase dev-analyse
+tags: [m1, symfony, analyse]
+context:
+  scaffold_script: scaffold.sh

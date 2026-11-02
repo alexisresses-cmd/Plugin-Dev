@@ -6,3 +6,6 @@ _source/
 *.bak
 .DS_Store
 Thumbs.db
+
+# Sorties brutes de `claude plugin eval` (seuls les rapports de jalon .md sont commités)
+evals/results/*/
