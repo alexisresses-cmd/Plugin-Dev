@@ -1,0 +1,17 @@
+/*
+Theme Name: Mon Thème
+Description: Thème enfant du site de l'association (agenda, newsletter).
+Author: Agence
+Template: parent-theme
+Version: 1.8.0
+Text Domain: mon-theme
+*/
+
+.mt-event-list {
+	list-style: none;
+	padding: 0;
+}
+
+.mt-event-list__date {
+	font-weight: bold;
+}
