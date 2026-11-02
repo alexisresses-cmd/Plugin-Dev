@@ -14,6 +14,9 @@
 | `code-mapper` | Architecture | `analyse` | non |
 | `architect` | Architecture | `analyse` | non |
 | `security-analyst` | Security | `analyse` | non |
+| `cartographer` | Architecture | `analyse` | non |
+| `convention-detector` | Conventions | `analyse` | non |
+| `risk-mapper` | Security, Data & migrations | `analyse` | non |
 | `dev-plan`, `planner-dev`, `planner-cto`, `plan-challenger` | Architecture, Data & migrations | `plan` | non |
 | `dev-implement` | Conventions, Architecture | `implement` | oui |
 | `test-writer` | Testing | `test` | non |
@@ -25,6 +28,8 @@
 | `dev-simplifier` | Simplification | `simplifier` | oui |
 | `dev-pr` | — | `pr` | non |
 
+Les rôles de `/devflow:discover` (`cartographer`, `convention-detector`, `risk-mapper`) n'ont pas de ticket : ils ne lisent pas de section de type de tâche.
+
 ## Procédure
 
 1. **Configuration.** Lis `.devflow/config.yml`, puis `.devflow/config.local.yml` s'il existe : ses clés remplacent celles de `config.yml` (fusion profonde).
@@ -35,7 +40,7 @@
    - `_inherit_` dans l'enfant : la section du parent s'applique sans ajout ;
    - un point de l'enfant qui dit « remplace » annule le point correspondant du parent ; sinon, l'enfant **complète** le parent.
 5. **Mode et tâche.** Lis la section de ton rôle (`## <phase>`) dans `K/modes/<mode du profil>.md` et dans `K/tasks/<task_type>.md`.
-6. **Projet.** Lis `.devflow/conventions.md` (en entier) et, pour les rôles `analyse` et `plan`, `.devflow/project-map.md` s'ils existent.
+6. **Projet.** Lis `.devflow/conventions.md` (en entier) s'il existe. Pour les rôles de phase `analyse` ou `plan` (table ci-dessus), lis aussi `.devflow/project-map.md` s'il existe (produit par `/devflow:discover`) : c'est un point de départ échantillonné, à vérifier dans le code.
 7. **Principes génériques.** Si la colonne `clean-code` vaut « oui », lis `K/core/clean-code.md`.
 8. **Priorité en cas de conflit**, de la plus forte à la plus faible (SPEC D2) :
    1. `.devflow/conventions.md`

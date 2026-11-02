@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: discover-php-legacy
+description: "/devflow:discover --yes sur la boutique PHP legacy (sans conventions.md)"
+tags: [m4, discover]
+context:
+  scaffold_script: scaffold.sh

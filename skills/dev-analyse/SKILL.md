@@ -18,6 +18,8 @@ Tu es l'**orchestrateur** de l'analyse. Tu fais le triage, tu lances les agents,
 
 Lis `.devflow/config.yml` (puis `.devflow/config.local.yml`, qui l'emporte). Absent : demande de lancer `/devflow:init` et arrête-toi.
 
+**Carte du projet** : note si `.devflow/project-map.md` existe (Glob ; ne la lis pas, les agents la chargent via le RESOLVER).
+
 Argument : `$ARGUMENTS`
 
 | Format | Action |
@@ -50,7 +52,7 @@ Lance **dans un seul message** (outil Agent, appels parallèles) :
 | `devflow:architect` | — | ✅ | ✅ |
 | `devflow:security-analyst` | si `security_audit` | si `security_audit` | si `security_audit` |
 
-Message à chaque agent : le texte complet du ticket, `task_type`, `size`, et la consigne « Applique ta procédure et réponds au format demandé ». Ils lisent eux-mêmes la configuration et les règles.
+Message à chaque agent : le texte complet du ticket, `task_type`, `size`, l'état de la carte (« Carte du projet : `.devflow/project-map.md`, pars-en pour situer la zone et ses risques, puis vérifie dans le code » ou « Carte du projet : absente »), et la consigne « Applique ta procédure et réponds au format demandé ». Ils lisent eux-mêmes la configuration et les règles.
 
 Si un agent échoue ou ne respecte pas son format, note-le dans la synthèse et continue. Si la cartographie contredit la taille estimée (ex. un ticket S qui touche 5 fichiers), corrige `size` et, si elle passe à M ou L, lance les agents manquants.
 
@@ -95,6 +97,7 @@ status: analysed
 **Fichiers clés** : …
 **Risques prioritaires** : top 3, tous agents confondus, du plus critique au moins critique
 **Questions bloquantes** : … ou « Aucune »
+**Carte du projet** : utilisée | absente{, en mode legacy : lancer `/devflow:discover`}
 **Feu vert** : ✅ | ⚠️ | ❌
 
 <!-- PLAN — complété par /devflow:dev-plan -->
@@ -124,6 +127,7 @@ Feu vert : ✅ / ⚠️ / ❌
 Puis :
 - ✅ ou ⚠️ → « Lance `/devflow:dev-plan` pour planifier. »
 - ❌ → « Résous les questions bloquantes avant `/devflow:dev-plan`. »
+- Carte absente et au moins un profil concerné en mode `legacy` → ajoute « Conseil : lance `/devflow:discover` pour cartographier le projet et fixer ses conventions observées ; les prochaines analyses en tiendront compte. »
 
 Pour un `bugfix`, l'approche recommandée est toujours le correctif minimal. Si un agent propose une refonte, mentionne-la comme dette à mettre au backlog.
 

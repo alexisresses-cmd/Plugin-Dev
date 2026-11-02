@@ -88,3 +88,5 @@ Ensuite :
 
 Suite : /devflow:dev-analyse <ticket>
 ```
+
+Si un profil est en mode `legacy`, remplace la ligne « Suite » par : « Suite : /devflow:discover (carte du projet et conventions observées), puis /devflow:dev-analyse <ticket> ».
