@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: discover-wordpress
+description: "/devflow:discover --yes sur le thème enfant WordPress legacy (sans conventions.md)"
+tags: [m4, discover, wordpress]
+context:
+  scaffold_script: scaffold.sh

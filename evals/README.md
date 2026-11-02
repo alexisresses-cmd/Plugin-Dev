@@ -35,7 +35,7 @@ Une commande `/devflow:…` écrite dans le prompt est développée directement,
 | `hook-block-secrets`, `hook-protect-wordpress` | hook (comparaison avec / sans plugin) | non |
 | `rules-symfony-reviewer-quality`, `rules-legacy-test-writer-refactor`, `rules-symfony-gate-checker-bugfix` | RESOLVER (3 combinaisons) | non |
 | `init-symfony`, `init-php-legacy`, `init-wordpress` | `/devflow:init --yes` | non |
-| `discover-php-legacy` | `/devflow:discover --yes` (scaffold `--no-conventions`) | non |
+| `discover-php-legacy`, `discover-wordpress` | `/devflow:discover --yes` (scaffold `--no-conventions`) | non |
 | `symfony-feature-01-analyse`, `symfony-bugfix-01-analyse`, `php-legacy-feature-01-analyse`, `symfony-fastlane-01-analyse`, `wp-legacy-feature-01-analyse` | dev-analyse | non |
 | `symfony-feature-01-plan`, `php-legacy-refactor-01-plan`, `wp-legacy-refactor-01-plan` | dev-plan (jusqu'à la validation) | non |
 | `symfony-feature-01-review` | dev-review | **oui** |
