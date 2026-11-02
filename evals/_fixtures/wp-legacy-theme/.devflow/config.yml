@@ -1,0 +1,37 @@
+schema_version: 1
+
+stacks:
+  - path: wp-content/themes/mon-theme/
+    profile: wordpress
+    mode: legacy
+    wordpress:
+      type: child-theme
+      protected:
+        - wp-admin/
+        - wp-includes/
+        - wp-content/plugins/
+        - wp-content/themes/parent-theme/
+
+tooling:
+  test: null
+  lint: null
+  static_analysis: null
+  static_analysis_baseline: null
+
+git:
+  base_branch: main
+  branch_prefix: feature/
+  commit_format: conventional
+  ticket_ref_format: "#{id}"
+  main_reviewer: null
+
+issue_tracker: text
+
+pipeline:
+  fast_lane: true
+  checkpoints: false
+  simplifier: false
+
+hooks:
+  block_secrets: true
+  no_comments: false

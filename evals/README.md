@@ -32,16 +32,24 @@ Une commande `/devflow:…` écrite dans le prompt est développée directement,
 
 | Case | Phase | Bash (sandbox) |
 |---|---|---|
-| `hook-block-secrets` | hook | non |
+| `hook-block-secrets`, `hook-protect-wordpress` | hook (comparaison avec / sans plugin) | non |
 | `rules-symfony-reviewer-quality`, `rules-legacy-test-writer-refactor`, `rules-symfony-gate-checker-bugfix` | RESOLVER (3 combinaisons) | non |
-| `init-symfony`, `init-php-legacy` | `/devflow:init --yes` | non |
-| `symfony-feature-01-analyse`, `symfony-bugfix-01-analyse`, `php-legacy-feature-01-analyse`, `symfony-fastlane-01-analyse` | dev-analyse | non |
-| `symfony-feature-01-plan`, `php-legacy-refactor-01-plan` | dev-plan (jusqu'à la validation) | non |
+| `init-symfony`, `init-php-legacy`, `init-wordpress` | `/devflow:init --yes` | non |
+| `symfony-feature-01-analyse`, `symfony-bugfix-01-analyse`, `php-legacy-feature-01-analyse`, `symfony-fastlane-01-analyse`, `wp-legacy-feature-01-analyse` | dev-analyse | non |
+| `symfony-feature-01-plan`, `php-legacy-refactor-01-plan`, `wp-legacy-refactor-01-plan` | dev-plan (jusqu'à la validation) | non |
 | `symfony-feature-01-review` | dev-review | **oui** |
 | `php-legacy-refactor-01-cycle` | dev-cycle avec G0 | **oui** |
 | `symfony-fastlane-01-cycle` | dev-cycle, voie rapide | **oui** |
 
 Les cases marqués **oui** portent le tag `needs-sandbox` et tournent dans la CI (`evals.yml`).
+
+`hook-protect-wordpress` se lance sans `--ablation none` et avec `--allow-tools Edit Write` : le grader `regex` vérifie que `wp-content/themes/parent-theme/functions.php` contient toujours la faute (fichier inchangé) dans les deux bras ; attendu 1,00 avec le plugin et 0,00 sans. Un grader `tool_used` sur Edit ne suffirait pas : il compte l'appel, refusé ou non.
+
+```bash
+claude plugin eval . --case 'hook-protect-wordpress' --scaffold --trust-plugin --no-publish --allow-tools Edit Write
+claude plugin eval . --case 'wp-*' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write Edit
+claude plugin eval . --case 'init-wordpress' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write Edit
+```
 
 ## Format d'un ticket
 
@@ -64,7 +72,7 @@ milestone: M4      # jalon à partir duquel le ticket doit passer
 
 ## Projets témoins
 
-Les projets sont **fictifs** : chaque ticket nomme dans `project` une fixture (`fixture:<nom>`) décrite dans sa section `## Projet témoin`. Les fixtures sont créées dans `_fixtures/` au jalon où leurs tickets deviennent exécutables (`symfony-api` : M1).
+Les projets sont **fictifs** : chaque ticket nomme dans `project` une fixture (`fixture:<nom>`) décrite dans sa section `## Projet témoin`. Les fixtures sont créées dans `_fixtures/` au jalon où leurs tickets deviennent exécutables (`symfony-api` : M1, `php-legacy-shop` : M3, `wp-legacy-theme` : M4).
 
 | Fixture | Profil(s) | Mode |
 |---|---|---|
