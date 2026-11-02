@@ -4,6 +4,26 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ## [Unreleased]
 
+## [0.3.0] — M3 : configuration et résolution des règles
+
+### Ajouté
+- `.devflow/config.yml` + `config.local.yml` (fusion profonde) ; modèles dans `templates/` (`config.yml`, `conventions.md`, `CLAUDE.snippet.md`, `adr.md`).
+- `/devflow:init` : détection des profils (champ `detect`), de l'outillage, du mode (signaux justifiés), des conventions git ; reprise des clés v0 de `CLAUDE.md` ; options `--yes` et `--greenfield`.
+- `knowledge/RESOLVER.md` complet : table des rôles, chaîne `extends`, lecture section par section, priorité D2.
+- Profils `php-native` (réécrit, 7 sections) et `symfony` (`extends: php-native`) ; `_template.md`.
+- Modes `legacy`, `modern`, `greenfield` et types de tâche `feature`, `bugfix`, `refactor` (8 sections par phase).
+- Skill `/devflow:rules` : affiche les règles chargées pour un rôle (test du RESOLVER).
+- Triage S/M/L dans `dev-analyse` ; voie rapide (S) dans `dev-cycle` ; planners réservés à la taille L.
+- Gate G0 (tests de caractérisation avant un refactor) ; règle du cliquet en mode legacy.
+- `hooks/scripts/read-config.sh` ; hooks `block_secrets` et `no_comments` configurables (`no_comments` désactivé par défaut).
+- Fixture `php-legacy-shop` ; 10 nouveaux cases (RESOLVER, init, legacy, voie rapide, G0).
+- ADR 0008.
+
+### Modifié
+- Tous les skills lisent `.devflow/config.yml` (`git.*`, `issue_tracker`, `pipeline.*`) au lieu de `CLAUDE.md`.
+- `gate-checker` utilise `tooling.*` et gère G0, G1, G2.
+- `block-secrets` (Bash) : analyse limitée aux commandes qui manipulent des fichiers, sans faux positifs sur les heredocs, messages de commit et `echo`.
+
 ## [0.2.0] — M2 : extraction des agents
 
 ### Ajouté
