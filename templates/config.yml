@@ -1,0 +1,35 @@
+# devflow — configuration du projet (commitée, partagée par l'équipe)
+# Surcharges personnelles : .devflow/config.local.yml (même schéma, toutes les clés facultatives, gitignoré)
+schema_version: 1
+
+# Un bloc par sous-projet. Un fichier relève du « path » le plus long qui le contient,
+# sinon du premier bloc. Profils v1 : php-native, symfony, wordpress, typescript, node, nestjs, angular.
+# Modes : legacy | modern | greenfield.
+stacks:
+  - path: ./
+    profile: symfony
+    mode: modern
+
+tooling:                          # commandes détectées par /devflow:init ; null si absent
+  test: null                      # ex. "vendor/bin/phpunit"
+  lint: null                      # ex. "vendor/bin/phpcs"
+  static_analysis: null           # ex. "vendor/bin/phpstan analyse --no-progress"
+  static_analysis_baseline: null  # ex. phpstan-baseline.neon (règle du cliquet en mode legacy)
+
+git:
+  base_branch: main
+  branch_prefix: feat/
+  commit_format: conventional     # conventional | texte libre décrivant le format
+  ticket_ref_format: "#{id}"
+  main_reviewer: null             # ex. "@handle"
+
+issue_tracker: text               # github | zenhub | trello | jira | linear | text
+
+pipeline:
+  fast_lane: true                 # voie rapide pour les tickets de taille S
+  checkpoints: false              # validations humaines entre les phases de dev-cycle
+  simplifier: false               # lance dev-simplifier après l'implémentation
+
+hooks:
+  block_secrets: true
+  no_comments: false
