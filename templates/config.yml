@@ -9,6 +9,18 @@ stacks:
   - path: ./
     profile: symfony
     mode: modern
+  # Bloc WordPress (profil wordpress uniquement) :
+  # - path: wp-content/themes/mon-theme/
+  #   profile: wordpress
+  #   mode: legacy
+  #   wordpress:
+  #     type: child-theme             # theme | child-theme | plugin | mu-plugin | site
+  #     protected:                    # relatifs à la racine ; toute modification refusée par le hook protect-paths
+  #       - wp-admin/
+  #       - wp-includes/
+  #       - wp-content/plugins/       # le path d'un bloc reste modifiable même s'il est dessous
+  #       - wp-content/themes/parent-theme/   # thème parent d'un thème enfant
+  #   config.local.yml peut ajouter des chemins protégés, jamais en retirer.
 
 tooling:                          # commandes détectées par /devflow:init ; null si absent
   test: null                      # ex. "vendor/bin/phpunit"
