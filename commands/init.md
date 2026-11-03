@@ -19,9 +19,20 @@ Tu proposes, l'utilisateur valide. Toute détection est **justifiée par des sig
 ## Étape 1 — Profils de stack
 
 1. Liste les profils disponibles : en-têtes YAML de `${CLAUDE_PLUGIN_ROOT}/knowledge/stacks/*.md` (hors `_template.md`). Lis uniquement l'en-tête (`profile`, `extends`, `detect`).
-2. Repère les sous-projets : la racine, et chaque dossier jusqu'à 2 niveaux qui contient un `composer.json`, un `package.json`, un `wp-config.php`, un `wp-load.php` ou un `style.css` (ignore `vendor/`, `node_modules/`, `.git/`). Le cas WordPress est traité à l'étape 1 bis.
-3. Pour chaque sous-projet, évalue les conditions `detect` de chaque profil : `files_any` (présence ; n'ouvre jamais `wp-config.php`, sa présence suffit), `composer_require_any` (clés `require` et `require-dev` de `composer.json`), `package_json_any` (`dependencies` et `devDependencies`), `headers_any` (le texte `header` dans les 30 premières lignes d'un fichier `file` à la racine du sous-projet, par exemple `Theme Name:` dans `style.css` ou `Plugin Name:` dans un `*.php`). Retiens le profil **le plus spécifique** qui correspond (le plus profond dans la chaîne `extends`). PHP sans `composer.json` → `php-native`.
-4. Profil détecté mais absent de cette version du plugin (ex. TypeScript) : signale-le et propose le parent disponible le plus proche, ou de l'ignorer.
+2. Repère les sous-projets : la racine, et chaque dossier jusqu'à 2 niveaux qui contient un `composer.json`, un `package.json`, un `tsconfig.json`, un `angular.json`, un `nest-cli.json`, un `wp-config.php`, un `wp-load.php` ou un `style.css` (ignore `vendor/`, `node_modules/`, `.git/`, `dist/`, `build/`). Le cas WordPress est traité à l'étape 1 bis.
+3. Pour chaque sous-projet, évalue les conditions `detect` de chaque profil : `files_any` (présence ; n'ouvre jamais `wp-config.php`, sa présence suffit), `composer_require_any` (clés `require` et `require-dev` de `composer.json`), `package_json_any` (`dependencies` et `devDependencies`), `headers_any` (le texte `header` dans les 30 premières lignes d'un fichier `file` à la racine du sous-projet, par exemple `Theme Name:` dans `style.css` ou `Plugin Name:` dans un `*.php`). Retiens le profil **le plus spécifique** qui correspond (le plus profond dans la chaîne `extends`) : `@nestjs/core` → `nestjs` (même si `express` est présent) ; `express` / `fastify` sans Nest → `node` ; `@angular/core` → `angular` ; `typescript` ou `tsconfig.json` seul → `typescript`. PHP sans `composer.json` → `php-native`.
+4. Profil détecté mais absent de cette version du plugin : signale-le et propose le parent disponible le plus proche, ou de l'ignorer.
+5. **Projet mixte** (plusieurs sous-projets détectés) : un bloc `stacks[]` par sous-projet, avec son `path` (relatif à la racine, `/` final), son profil et son mode (étape 3). Le dossier racine ne produit un bloc que s'il contient lui-même du code applicatif : un `package.json` racine de workspaces ou d'outillage seul n'en produit pas. Place un éventuel bloc `./` en premier (bloc par défaut des fichiers hors de tout `path`).
+
+   ```yaml
+   stacks:
+     - path: api/
+       profile: symfony
+       mode: modern
+     - path: front/
+       profile: angular
+       mode: modern
+   ```
 
 ## Étape 1 bis — WordPress
 
@@ -41,7 +52,7 @@ Si le profil `wordpress` est détecté :
    - `wp-content/plugins/` : l'extension du bloc reste modifiable (le hook `protect-paths.sh` exempte le `path` de chaque bloc, même placé sous un chemin protégé) ;
    - pour un thème enfant, le dossier du thème parent (`wp-content/themes/<valeur de Template:>/`) ;
    - n'inscris que les chemins présents dans le dépôt ; dépôt limité au thème ou à l'extension → `protected: []`.
-4. Signale que le JavaScript des blocs Gutenberg (`block.json`, `src/*.js`) relève du profil `typescript` (jalon M5).
+4. Blocs Gutenberg : un dossier de bloc ou d'extension avec un `package.json` (`@wordpress/scripts`) reçoit son propre bloc `stacks[]` de profil `typescript` dont le `path` est le dossier des sources JavaScript (ex. `wp-content/plugins/mt-blocks/src/`) ; le PHP reste ainsi dans le bloc `wordpress`.
 
 Bloc généré (thème enfant d'un site complet) :
 
@@ -60,7 +71,7 @@ Bloc généré (thème enfant d'un site complet) :
 
 ## Étape 2 — Outillage
 
-Pour chaque sous-projet, détecte (sinon `null`) :
+Pour chaque sous-projet, détecte (sinon `null`). Pour TypeScript, préfère les scripts de `package.json` (`test`, `lint`, `test:e2e`) aux commandes brutes.
 
 | Clé | Signaux |
 |---|---|
@@ -68,6 +79,11 @@ Pour chaque sous-projet, détecte (sinon `null`) :
 | `tooling.lint` | `phpcs.xml*` / `vendor/bin/phpcs` (WordPress : `wp-coding-standards/wpcs` → `vendor/bin/phpcs --standard=WordPress`) ; `.php-cs-fixer*.php` → `vendor/bin/php-cs-fixer fix --dry-run --diff` |
 | `tooling.static_analysis` | `phpstan.neon*` → `vendor/bin/phpstan analyse --no-progress` ; `psalm.xml*` → `vendor/bin/psalm` |
 | `tooling.static_analysis_baseline` | `phpstan-baseline.neon`, `psalm-baseline.xml` |
+| `tooling.test` (TypeScript) | `vitest` → `npx vitest run` ; `jest` → `npx jest` ; Angular : `npx ng test` si `test` est configuré dans `angular.json` ; NestJS : `npm test && npm run test:e2e` |
+| `tooling.lint` (TypeScript) | `eslint.config.*` / `.eslintrc*` → `npx eslint .` ; Angular : `npx ng lint` si `lint` est configuré dans `angular.json` |
+| `tooling.static_analysis` (TypeScript) | `tsconfig.json` → `npx tsc --noEmit` (Angular : `-p tsconfig.app.json`) |
+
+`tooling` reste **global** (une commande par clé, lancée depuis la racine du dépôt) : `gate-checker` et `test-writer` n'ont qu'une commande à exécuter. En projet mixte, chaque clé enchaîne les commandes des sous-projets, chacune dans un sous-shell qui se place dans son dossier, dans l'ordre des blocs : `"(cd api && vendor/bin/phpunit) && (cd front && npx vitest run)"`. Un sous-projet sans outil pour une clé est omis de la chaîne ; aucun outil → `null`. `static_analysis_baseline` reste un chemin relatif à la racine (`api/phpstan-baseline.neon`).
 
 Signale aussi la CI (`.github/workflows/`, `.gitlab-ci.yml`), pour information.
 
@@ -78,15 +94,17 @@ Mesure et affiche ces signaux, puis propose un mode :
 | Signal | Commande indicative |
 |---|---|
 | Version PHP | `require.php` de `composer.json`, sinon `php -v` |
+| Version TypeScript / framework | `typescript`, `@angular/core`, `@nestjs/core` dans `package.json` ; `engines.node` |
+| Typage strict (TypeScript) | `"strict": true` dans `tsconfig.json` |
 | Tests | nombre de fichiers de tests ; présence de `tooling.test` |
 | Namespaces | part des fichiers PHP avec `namespace` |
-| Taille | lignes moyennes des fichiers PHP du code applicatif (hors `vendor/`) |
+| Taille | lignes moyennes des fichiers PHP ou TypeScript du code applicatif (hors `vendor/`, `node_modules/`, `dist/`) |
 | Âge et activité | date du premier commit, nombre de commits |
 
 Les signaux portent sur le code du sous-projet seulement : pour WordPress, le `path` du bloc, sans les chemins protégés ni le code tiers.
 
-- **legacy** : au moins deux signaux parmi : PHP < 7.4, pas de Composer, pas de tests, moins de 50 % de fichiers avec namespace, plus de 400 lignes en moyenne.
-- **greenfield** : option `--greenfield`, ou code applicatif quasi vide (moins de 5 fichiers source hors configuration et tests). Le nombre de commits n'est **pas** un signal suffisant (clone partiel, import récent).
+- **legacy** : au moins deux signaux parmi : PHP < 7.4, pas de Composer, pas de tests, moins de 50 % de fichiers avec namespace, plus de 400 lignes en moyenne. TypeScript : pas de tests, `strict` absent, Angular < 15 (NgModules partout), Node < 18, plus de 400 lignes en moyenne.
+- **greenfield** : option `--greenfield`, ou code applicatif quasi vide (moins de 5 fichiers source hors configuration et tests ; TypeScript : `*.ts` hors `*.spec.ts`, `*.d.ts` et fichiers de configuration, ce qui couvre un projet tout juste créé par `nest new` ou `ng new`). En projet mixte, la règle s'applique à chaque sous-projet séparément. Le nombre de commits n'est **pas** un signal suffisant (clone partiel, import récent).
 - **modern** : sinon.
 
 ## Étape 4 — Git et tracker

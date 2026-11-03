@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: rules-angular-reviewer-quality
+description: "RESOLVER — angular/modern/feature, rôle reviewer-quality (critères de review front)"
+tags: [m5, resolver]
+context:
+  scaffold_script: scaffold.sh

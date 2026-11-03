@@ -31,11 +31,12 @@ Fichier → profil (mode)
 
 Fichiers lus (dans l'ordre de priorité)
   1. .devflow/conventions.md            {lu | absent}
-  2. tasks/{type}.md      § {section}
-  3. modes/{mode}.md      § {section}
-  4. stacks/{enfant}.md   § {sections}   {« _inherit_ » le cas échéant}
+  2. core/api-contract.md § {section}   {lu (projet mixte) | non requis}
+  3. tasks/{type}.md      § {section}
+  4. modes/{mode}.md      § {section}   {un par mode concerné}
+  5. stacks/{enfant}.md   § {sections}   {« _inherit_ » le cas échéant ; une chaîne par profil}
      stacks/{parent}.md   § {sections}
-  5. core/clean-code.md                 {lu | non requis}
+  6. core/clean-code.md                 {lu | non requis}
 
 Règles déterminantes (5 maximum par source, une ligne chacune, avec la source)
   [task] …
