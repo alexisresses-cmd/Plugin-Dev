@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: symfony-feature-01-review
+description: Ticket symfony-modern-feature-01, phase dev-review sur une implémentation qui contient 3 défauts volontaires (exige Bash, donc le sandbox OS — exécuté en CI)
+tags: [m2, symfony, review, needs-sandbox]
+context:
+  scaffold_script: scaffold.sh

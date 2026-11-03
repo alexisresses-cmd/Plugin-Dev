@@ -74,5 +74,23 @@ expect allow no-comments.sh "markdown ignoré"          "$(edit_in README.md 'a'
 expect block no-comments.sh "write nouveau fichier"    "$(write_in /tmp/devflow-new-$$.ts $'// utilitaire\nexport const a = 1;')"
 expect allow no-comments.sh "write propre"             "$(write_in /tmp/devflow-new-$$.ts $'export const a = 1;')"
 
+# restrict-agents
+agent_in() { jq -n --arg a "$1" --arg c "$2" '{tool_name:"Bash",agent_type:$a,tool_input:{command:$c}}'; }
+expect allow restrict-agents.sh "reviewer git diff"      "$(agent_in devflow:reviewer-bugs 'git diff main...HEAD')"
+expect allow restrict-agents.sh "reviewer git log | head" "$(agent_in devflow:reviewer-quality 'git log main..HEAD --oneline | head -20')"
+expect allow restrict-agents.sh "challenger git show"     "$(agent_in devflow:review-challenger 'git show HEAD:src/A.php')"
+expect allow restrict-agents.sh "reviewer git -C"         "$(agent_in devflow:reviewer-security 'git -C /app grep -n query')"
+expect block restrict-agents.sh "reviewer git commit"     "$(agent_in devflow:reviewer-bugs 'git commit -am fix')"
+expect block restrict-agents.sh "reviewer git checkout"   "$(agent_in devflow:reviewer-bugs 'git checkout -- src/A.php')"
+expect block restrict-agents.sh "reviewer sed -i"         "$(agent_in devflow:reviewer-quality 'sed -i s/a/b/ src/A.php')"
+expect block restrict-agents.sh "reviewer chained rm"     "$(agent_in devflow:reviewer-quality 'git diff && touch x')"
+expect block restrict-agents.sh "reviewer diff --output"  "$(agent_in devflow:reviewer-bugs 'git diff --output=/tmp/x')"
+expect block restrict-agents.sh "reviewer pipe xargs"     "$(agent_in devflow:reviewer-bugs 'git log --format=%H | xargs rm')"
+expect block restrict-agents.sh "reviewer redirection"    "$(agent_in devflow:reviewer-bugs 'git diff > /tmp/x')"
+expect block restrict-agents.sh "reviewer subshell"       "$(agent_in devflow:reviewer-bugs 'git log $(touch x)')"
+expect allow restrict-agents.sh "reviewer 2>/dev/null"    "$(agent_in devflow:reviewer-bugs 'git diff main...HEAD 2>/dev/null || git diff master...HEAD 2>&1')"
+expect allow restrict-agents.sh "gate-checker phpunit"    "$(agent_in devflow:gate-checker 'vendor/bin/phpunit')"
+expect allow restrict-agents.sh "session principale"      "$(bash_in 'git commit -m x')"
+
 echo "hooks : $pass OK, $fail KO"
 exit $fail

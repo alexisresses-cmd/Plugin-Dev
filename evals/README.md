@@ -28,6 +28,16 @@ claude plugin eval . --case 'symfony-*' --scaffold --trust-plugin --no-publish -
 
 Une commande `/devflow:…` écrite dans le prompt est développée directement, sans passer par l'outil `Skill`. Pour vérifier qu'un skill a bien tourné, on contrôle donc un effet observable (ex. lecture de ses prompts avec `tool_used: Read`). Les cases qui accordent `Bash` exigent le sandbox OS (bubblewrap + socat sous Linux).
 
+## Cases disponibles
+
+| Case | Phase | Bash (sandbox) |
+|---|---|---|
+| `hook-block-secrets` | hook | non |
+| `symfony-feature-01-analyse` | dev-analyse | non |
+| `symfony-bugfix-01-analyse` | dev-analyse | non |
+| `symfony-feature-01-plan` | dev-plan (jusqu'à la validation) | non |
+| `symfony-feature-01-review` | dev-review (revue, challenge, correction, G2) | **oui** : CI `evals.yml` |
+
 ## Format d'un ticket
 
 ```markdown

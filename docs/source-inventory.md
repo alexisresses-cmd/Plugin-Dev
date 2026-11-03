@@ -123,3 +123,21 @@ La source a **G1** (implémentation, 7 critères), **G2** (tests dans dev-cycle,
 | `skills/_shared/php-conventions.md` n'est lu par aucun skill | Les conventions PHP n'étaient pas injectées | `knowledge/stacks/php-native.md` est lu par `dev-implement` dès le M1 |
 | `workflow('dev-review')` dans un workflow de plugin | Un nom non préfixé n'est pas résolu (`no workflow with that name`) | `workflow('devflow:dev-review-run')` |
 | Workflows et skills homonymes (`dev-cycle`, `dev-review`) | Collision de commandes `/devflow:…` dans un plugin | Workflows renommés `dev-cycle-run`, `dev-review-run` |
+
+## 7. Correspondance finale des prompts v0 → agents (M2)
+
+| Prompt v0 | Agent v0.2 |
+|---|---|
+| `dev-analyse/agents/business.md` | `agents/business-analyst.md` |
+| `dev-analyse/agents/code.md` | `agents/code-mapper.md` |
+| `dev-analyse/agents/architecture.md` | `agents/architect.md` |
+| `dev-analyse/agents/security.md` | `agents/security-analyst.md` |
+| `dev-plan/agents/developer.md` | `agents/planner-dev.md` (tickets lourds uniquement, ADR 0007) |
+| `dev-plan/agents/architect.md` | `agents/planner-cto.md` (tickets lourds uniquement, ADR 0007) |
+| `dev-plan/agents/challenger.md` | `agents/plan-challenger.md` |
+| `dev-review/agents/quality.md` + prompt « qualité » du workflow | `agents/reviewer-quality.md` |
+| `dev-review/agents/bugs.md` + prompt « bugs » du workflow | `agents/reviewer-bugs.md` |
+| `dev-review/agents/security.md` + prompt « sécurité » du workflow | `agents/reviewer-security.md` |
+| `challenge-review/SKILL.md` (posture, grille) | `agents/review-challenger.md` (références conservées dans `skills/challenge-review/references/`) |
+| G1 de `dev-implement`, G2/G3 des workflows | `agents/gate-checker.md` |
+| `dev-test/SKILL.md` (génération) | `agents/test-writer.md` |

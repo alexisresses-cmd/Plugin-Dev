@@ -4,6 +4,27 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ## [Unreleased]
 
+## [0.2.0] — M2 : extraction des agents
+
+### Ajouté
+- 13 agents de plugin (table 3.5 de la SPEC), avec outils, modèle et format de sortie structuré : `business-analyst`, `code-mapper` (haiku), `architect` (opus), `security-analyst`, `planner-dev`, `planner-cto`, `plan-challenger` (opus), `test-writer`, `reviewer-quality`, `reviewer-bugs` (opus), `reviewer-security` (opus), `review-challenger` (opus), `gate-checker` (haiku).
+- `knowledge/RESOLVER.md` (version M2) : procédure de chargement des règles commune à tous les agents.
+- Hook `restrict-agents.sh` : les reviewers et le challenger ne peuvent lancer que des commandes git de lecture (66 tests au total).
+- `dev-cycle --checkpoints` : remplace le mode Orchestra.
+- Évals : cases `symfony-feature-01-plan` et `symfony-feature-01-review` (CI), fixtures `analyses/` et `patches/`.
+- CI GitHub Actions : `ci.yml` (validation et tests des hooks à chaque push), `evals.yml` (évals manuelles avec sandbox).
+- ADR 0007 : `dev-plan` rédige le plan lui-même, seul le challenger est délégué.
+
+### Modifié
+- `dev-analyse`, `dev-plan`, `dev-review`, `dev-test`, `challenge-review` deviennent des orchestrateurs légers. Les rapports complets vont dans le fichier d'analyse, plus dans la conversation.
+- `dev-cycle` est réécrit en skill : il enchaîne `dev-implement`, G1, `dev-test`, `dev-review` (challenge + G2) et `dev-pr`, avec 2 corrections maximum par gate.
+- Les gates G1 et G2 sont évaluées par `gate-checker`, et non plus par l'agent qui a produit le code.
+- Le fichier d'analyse a un en-tête YAML (`task_type`, `security_audit`, `status`).
+- Pour un bugfix, l'analyse recommande le correctif minimal.
+
+### Supprimé
+- Workflows JS `dev-cycle-run` et `dev-review-run`, et les dossiers `prompts/` des skills (intégrés aux agents).
+
 ## [0.1.0] — M1 : squelette du plugin
 
 ### Ajouté

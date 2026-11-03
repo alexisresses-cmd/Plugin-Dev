@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: symfony-feature-01-plan
+description: Ticket symfony-modern-feature-01, phase dev-plan jusqu'à la demande de validation (aucune action git avant validation)
+tags: [m2, symfony, plan]
+context:
+  scaffold_script: scaffold.sh
