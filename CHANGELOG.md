@@ -4,6 +4,20 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ## [Unreleased]
 
+## [0.5.0] — M5 : TypeScript et projets mixtes
+
+### Ajouté
+- Profils `typescript`, `node` (`extends: typescript`), `nestjs` (`extends: node`) et `angular` (`extends: typescript`) ; détection par `files_any` et `package_json_any`.
+- Critères de review front dans `angular` : accessibilité, performance, RxJS.
+- Projets mixtes : chaque fichier suit le profil et le mode de son bloc `stacks[]` ; règle du contrat d'API (`knowledge/core/api-contract.md`), chargée seulement quand le périmètre couvre plusieurs blocs : contrat mis à jour des deux côtés dans le même ticket, ordre contrat → serveur → client, validation serveur obligatoire, divergence = `blocking`.
+- `/devflow:init` : un bloc `stacks[]` par sous-projet, signaux de mode et outillage TypeScript.
+- `dev-analyse` : champ « Profils » et, en mixte, « Contrat d'API » ; `dev-plan` : profil indiqué par tâche en mixte.
+- Fixtures `nest-greenfield`, `angular-app`, `mixed-angular-symfony` ; 8 nouveaux cases.
+- ADR 0009.
+
+### Modifié
+- Mode `greenfield` : chaque tâche du plan inclut ses tests.
+
 ## [0.4.0] — M4 : legacy et WordPress
 
 ### Ajouté

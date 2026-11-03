@@ -2,7 +2,7 @@
 
 > Plugin Claude Code multi-stack : de l'analyse du ticket à la PR, avec des agents qui adaptent leurs règles à la stack, à la maturité du projet et au type de tâche.
 
-**Statut :** v0.4.0 (jalon M4). Profils `php-native`, `symfony` et `wordpress` ; modes `legacy`, `modern`, `greenfield` ; types de tâche `feature`, `bugfix`, `refactor`. TypeScript (Node, NestJS, Angular) arrive au M5.
+**Statut :** v0.5.0 (jalon M5). Profils `php-native`, `symfony`, `wordpress`, `typescript`, `node`, `nestjs`, `angular`, projets mixtes ; modes `legacy`, `modern`, `greenfield` ; types de tâche `feature`, `bugfix`, `refactor`.
 
 ## Installation
 
