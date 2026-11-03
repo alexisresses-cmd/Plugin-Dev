@@ -4,6 +4,19 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ## [Unreleased]
 
+## [0.4.0] — M4 : legacy et WordPress
+
+### Ajouté
+- `/devflow:discover` : trois agents en parallèle (`cartographer`, `convention-detector`, `risk-mapper`) produisent `.devflow/project-map.md` et un brouillon de `.devflow/conventions.md` (section « Incohérences observées »), validés avant écriture ; option `--yes`.
+- Profil `wordpress` (`extends: php-native`) : WPCS, hooks, thème enfant, sécurité (nonce, capacités, échappement, `$wpdb->prepare`), tests ; détection par `headers_any` (en-têtes `Theme Name:` / `Plugin Name:`).
+- Bloc `wordpress` dans `.devflow/config.yml` (`type`, `protected`) et hook `protect-paths.sh` : toute modification du cœur, du thème parent ou d'une extension tierce est refusée ; `config.local.yml` ne peut qu'ajouter des chemins.
+- `/devflow:init` détecte WordPress (type, thème parent) et suggère `/devflow:discover` en mode legacy.
+- `dev-analyse` transmet l'état de la carte du projet aux agents.
+- Fixture `wp-legacy-theme` ; 6 nouveaux cases (discover ×2, WordPress feature, refactor, init, hook).
+
+### Modifié
+- `tasks/refactor.md` : une seule transformation par tâche du plan.
+
 ## [0.3.0] — M3 : configuration et résolution des règles
 
 ### Ajouté
