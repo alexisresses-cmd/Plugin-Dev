@@ -2,7 +2,7 @@
 name: review-return
 description: >
   Traite les retours d'une Pull Request laissés par le reviewer principal (lu depuis
-  MAIN_REVIEWER dans CLAUDE.md). Récupère les commentaires, challenge chaque point
+  git.main_reviewer dans .devflow/config.yml). Récupère les commentaires, challenge chaque point
   (valide / discutable / invalide), rédige une réponse justifiée pour chaque commentaire,
   applique les corrections validées dans le code, et produit un tableau de synthèse.
   Déclencher quand l'utilisateur dit "traite les retours de review", "réponds aux retours PR",
@@ -22,7 +22,7 @@ Chaque réponse rédigée est professionnelle, argumentée, et prête à être p
 ## Identification du reviewer
 
 **Priorité 1** — Option `--reviewer <handle>` dans les arguments (utilisée par `/devflow:dev-copilot`).
-**Priorité 2** — Lis `CLAUDE.md` à la racine du projet et extrais la valeur de `MAIN_REVIEWER`.
+**Priorité 2** — `git.main_reviewer` dans `.devflow/config.yml` (`config.local.yml` l'emporte).
 **Priorité 3** — Si aucun reviewer n'est défini, demande à l'utilisateur :
   > "Quel est le handle GitHub du reviewer dont tu veux traiter les retours ?"
 
@@ -83,7 +83,7 @@ Pour chaque commentaire du reviewer :
 
 **a) Le problème signalé est-il réel ?**
 - Le code a-t-il effectivement le défaut décrit ?
-- Le commentaire tient-il compte du contexte métier et des conventions du projet (`CLAUDE.md`) ?
+- Le commentaire tient-il compte du contexte métier et des conventions du projet (`.devflow/conventions.md`) ?
 - S'agit-il d'une règle objective ou d'une préférence personnelle ?
 
 **b) La correction proposée est-elle adaptée ?**

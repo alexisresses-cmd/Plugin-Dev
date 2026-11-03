@@ -3,6 +3,8 @@ ticket: "#42"
 title: Archivage d'un produit par un administrateur
 date: 2026-11-02
 task_type: feature
+size: M
+profiles: [symfony]
 security_audit: true
 status: analysed
 ---

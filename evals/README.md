@@ -33,10 +33,15 @@ Une commande `/devflow:…` écrite dans le prompt est développée directement,
 | Case | Phase | Bash (sandbox) |
 |---|---|---|
 | `hook-block-secrets` | hook | non |
-| `symfony-feature-01-analyse` | dev-analyse | non |
-| `symfony-bugfix-01-analyse` | dev-analyse | non |
-| `symfony-feature-01-plan` | dev-plan (jusqu'à la validation) | non |
-| `symfony-feature-01-review` | dev-review (revue, challenge, correction, G2) | **oui** : CI `evals.yml` |
+| `rules-symfony-reviewer-quality`, `rules-legacy-test-writer-refactor`, `rules-symfony-gate-checker-bugfix` | RESOLVER (3 combinaisons) | non |
+| `init-symfony`, `init-php-legacy` | `/devflow:init --yes` | non |
+| `symfony-feature-01-analyse`, `symfony-bugfix-01-analyse`, `php-legacy-feature-01-analyse`, `symfony-fastlane-01-analyse` | dev-analyse | non |
+| `symfony-feature-01-plan`, `php-legacy-refactor-01-plan` | dev-plan (jusqu'à la validation) | non |
+| `symfony-feature-01-review` | dev-review | **oui** |
+| `php-legacy-refactor-01-cycle` | dev-cycle avec G0 | **oui** |
+| `symfony-fastlane-01-cycle` | dev-cycle, voie rapide | **oui** |
+
+Les cases marqués **oui** portent le tag `needs-sandbox` et tournent dans la CI (`evals.yml`).
 
 ## Format d'un ticket
 

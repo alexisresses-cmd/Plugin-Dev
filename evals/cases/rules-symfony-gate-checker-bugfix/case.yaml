@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: rules-symfony-gate-checker-bugfix
+description: "RESOLVER — symfony/modern/bugfix, rôle gate-checker"
+tags: [m3, resolver]
+context:
+  scaffold_script: scaffold.sh

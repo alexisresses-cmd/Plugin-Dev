@@ -2,8 +2,9 @@
 # Copie une fixture dans l'espace de travail du run et en fait un dépôt git sur main.
 # Usage : scaffold.sh <fixture> [--with-env] [--analysis <nom>] [--branch <nom>]
 #   --with-env        ajoute un faux fichier d'environnement avec un mot de passe (test du hook block-secrets)
+#   --no-devflow      retire .devflow/ et remet le CLAUDE.md de devflow v0 (tests de /devflow:init)
 #   --analysis <nom>  copie _fixtures/analyses/<nom>.md dans analysis/ (statut lu dans son en-tête)
-#   --branch <nom>    crée la branche <nom> et y commite _fixtures/patches/<nom>.patch
+#   --branch <nom>    crée la branche <nom> (et y commite _fixtures/patches/<nom>.patch s'il existe)
 set -euo pipefail
 fixtures="$(cd "$(dirname "$0")" && pwd)"
 fixture="$fixtures/$1"
@@ -16,7 +17,11 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --with-env)
       printf 'APP_ENV=dev\nAPP_SECRET=f00dcafe\nDATABASE_URL="mysql://catalog:S3cr3t-Pa55@127.0.0.1:3306/catalog"\n' > .env
-      printf '.env\n' > .gitignore ;;
+      printf '.env\n' >> .gitignore ;;
+    --no-devflow)
+      rm .devflow/config.yml .devflow/conventions.md
+      rmdir .devflow
+      cp "$fixtures/claude-v0/$(basename "$fixture").md" CLAUDE.md ;;
     --analysis)
       mkdir -p analysis
       cp "$fixtures/analyses/$2.md" "analysis/20261102-$2.md"
@@ -36,6 +41,8 @@ git commit -q -m "chore: état initial"
 
 if [[ -n "$branch" ]]; then
   git checkout -q -b "$branch"
-  git apply --index "$fixtures/patches/$branch.patch"
-  git commit -q -m "feat(product): #42 archivage d'un produit"
+  if [[ -f "$fixtures/patches/$branch.patch" ]]; then
+    git apply --index "$fixtures/patches/$branch.patch"
+    git commit -q -m "feat(product): #42 archivage d'un produit"
+  fi
 fi

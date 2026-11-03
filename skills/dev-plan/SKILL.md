@@ -14,7 +14,11 @@ Tu es l'**orchestrateur** de la planification. Tu rédiges le brouillon, un agen
 
 ## Étape 0 — Fichier d'analyse
 
-Dans l'ordre : `$ARGUMENTS` ; le fichier créé par `/devflow:dev-analyse` dans cette session ; le fichier `analysis/*.md` le plus récent dont le `status` vaut `analysed`. Sinon, demande-le.
+Lis `.devflow/config.yml` (puis `config.local.yml`, qui l'emporte). Absent : demande `/devflow:init` et arrête-toi.
+
+Fichier d'analyse, dans l'ordre : `$ARGUMENTS` ; le fichier créé par `/devflow:dev-analyse` dans cette session ; le fichier `analysis/*.md` le plus récent dont le `status` vaut `analysed`. Sinon, demande-le. Lis son en-tête (`task_type`, `size`, `profiles`).
+
+Applique `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md` pour le rôle `dev-plan` : les sections `## plan` du mode et du type de tâche s'imposent au plan.
 
 Si la synthèse indique **Feu vert : ❌**, rappelle les questions bloquantes et arrête-toi.
 
@@ -22,10 +26,16 @@ Si la synthèse indique **Feu vert : ❌**, rappelle les questions bloquantes et
 
 L'analyse contient déjà la cartographie du code et l'architecture recommandée. Rédige toi-même le brouillon, sans relire tout le code (vérifie seulement un point précis si l'analyse est ambiguë).
 
-**Exception (tickets lourds)** : si la synthèse estime le ticket Complexe, ou s'il touche plus de 8 fichiers, délègue le brouillon à `devflow:planner-dev` et `devflow:planner-cto`, lancés **en parallèle**, puis fusionne leurs sorties. Cette règle sera remplacée par le triage S/M/L au M3.
+Selon `size` :
+
+| Taille | Brouillon | Challenge |
+|---|---|---|
+| `S` | toi, en quelques lignes | aucun |
+| `M` | toi | `devflow:plan-challenger` |
+| `L` | `devflow:planner-dev` et `devflow:planner-cto` **en parallèle** (message : chemin du fichier d'analyse), puis tu fusionnes | `devflow:plan-challenger` |
 
 Contenu du brouillon :
-- **Tâches** dans l'ordre d'implémentation (données et migrations d'abord, contrôleur et vue ensuite), 8 au maximum, chacune concrète et committable seule si possible : fichiers, nature (créer / modifier / supprimer), complexité. Pour un `bugfix`, la première tâche est un test qui reproduit le bug. Pour un `refactor`, ce sont les tests de caractérisation.
+- **Tâches** dans l'ordre d'implémentation (données et migrations d'abord, contrôleur et vue ensuite), 8 au maximum, chacune concrète et committable seule si possible : fichiers, nature (créer / modifier / supprimer), complexité. Respecte les règles `## plan` chargées (ex. test de reproduction en premier pour un bugfix, tests de caractérisation pour un refactor, changement minimal en legacy).
 - **Dépendances** entre tâches.
 - **Pièges** d'implémentation, tirés des risques de l'analyse.
 - **Hors périmètre**, précis.
@@ -34,11 +44,12 @@ Contenu du brouillon :
 
   | Signal | Mode |
   |---|---|
+  | `size: S` et `pipeline.fast_lane: true` | `dev-cycle` (voie rapide) |
   | Complexité Complexe, risque sécu 🔴/🟠, code partagé ou interface publique touchés, plus de 5 fichiers | `dev-cycle --checkpoints` |
   | Complexité Simple ou Moyenne, risque sécu 🟢 ou absent | `dev-cycle` |
   | Complexité Moyenne, risque sécu 🟡, besoin de valider chaque étape | séquentiel |
 
-## Étape 2 — Challenge
+## Étape 2 — Challenge (tailles M et L)
 
 Lance `devflow:plan-challenger` avec le chemin du fichier d'analyse et le brouillon, copié tel quel.
 
@@ -65,16 +76,16 @@ Mode recommandé : {mode} — {raison}
 
 ## Étape 4 — Branche et draft PR (après validation)
 
-Convention lue dans `CLAUDE.md` : `BRANCH_PREFIX` (défaut `feat/`). Nom : `{BRANCH_PREFIX}{ticket-id}-{slug}` (slug en kebab-case, 5 mots maximum).
+Nom : `{git.branch_prefix}{ticket-id}-{slug}` (slug en kebab-case, 5 mots maximum).
 
 1. `git branch --show-current`.
 2. Si une branche du ticket existe déjà (locale ou distante) : `git checkout` dessus.
-3. Si tu es sur `main` / `master` : `git pull`, puis crée la branche.
+3. Si tu es sur `git.base_branch` : `git pull`, puis crée la branche.
 4. Si tu es sur une autre branche : avertis l'utilisateur et demande confirmation.
 5. Draft PR :
    ```bash
    git push -u origin {branche}
-   gh pr create --draft --title "WIP: {ticket-id} - {titre court}" --body "Développement en cours — {source du ticket}" --base {main|master}
+   gh pr create --draft --title "WIP: {ticket-id} - {titre court}" --body "Développement en cours — {source du ticket}" --base {git.base_branch}
    ```
 
 ## Étape 5 — Fichier d'analyse
@@ -107,7 +118,7 @@ Passe `status` à `planned` dans l'en-tête, puis remplace le commentaire `<!-- 
 
 Mode recommandé : ⭐ {mode}
 
-• Automatisé           /devflow:dev-cycle analysis/{fichier}.md
+• Automatisé           /devflow:dev-cycle analysis/{fichier}.md   (taille S : voie rapide implement → G1 → PR)
 • Avec validations     /devflow:dev-cycle analysis/{fichier}.md --checkpoints
 • Séquentiel           /devflow:dev-implement analysis/{fichier}.md → /devflow:dev-test → /devflow:dev-review → /devflow:dev-pr
 ```

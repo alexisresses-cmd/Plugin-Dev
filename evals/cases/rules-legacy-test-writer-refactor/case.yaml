@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: rules-legacy-test-writer-refactor
+description: "RESOLVER — php-native/legacy/refactor, rôle test-writer"
+tags: [m3, resolver]
+context:
+  scaffold_script: scaffold.sh

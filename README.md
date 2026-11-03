@@ -2,7 +2,7 @@
 
 > Plugin Claude Code multi-stack : de l'analyse du ticket à la PR, avec des agents qui adaptent leurs règles à la stack, à la maturité du projet et au type de tâche.
 
-**Statut :** v0.2.0 (jalon M2). Périmètre PHP, avec des agents spécialisés qui travaillent chacun dans leur propre contexte. Le multi-stack arrive aux jalons M3 à M5.
+**Statut :** v0.3.0 (jalon M3). Profils `php-native` et `symfony` ; modes `legacy`, `modern`, `greenfield` ; types de tâche `feature`, `bugfix`, `refactor`. WordPress arrive au M4, TypeScript (Node, NestJS, Angular) au M5.
 
 ## Installation
 
@@ -16,6 +16,7 @@ En local, depuis un clone : `/plugin marketplace add ./` puis `/plugin install d
 ## Démarrage
 
 ```bash
+/devflow:init                                                 # qualifie le projet → .devflow/config.yml
 /devflow:dev-analyse https://github.com/owner/repo/issues/42   # analyse multi-agents
 /devflow:dev-plan                                             # plan, branche, draft PR, mode recommandé
 /devflow:dev-cycle analysis/20261102-mon-ticket.md            # mode automatisé
@@ -29,11 +30,22 @@ Mode séquentiel : `/devflow:dev-implement` → `/devflow:dev-test` → `/devflo
 | Type | Éléments |
 |---|---|
 | Skills (orchestrateurs) | `dev-analyse`, `dev-plan`, `dev-cycle`, `dev-implement`, `dev-test`, `dev-review`, `challenge-review`, `dev-pr`, `dev-commit`, `review-return`, `dev-copilot` |
-| Commande | `dev-branch` |
+| Commandes | `init`, `dev-branch`, `rules` (skill de diagnostic) |
 | Agents (contexte isolé) | analyse : `business-analyst`, `code-mapper`, `architect`, `security-analyst` · plan : `plan-challenger` (+ `planner-dev`, `planner-cto` pour les tickets lourds) · tests : `test-writer` · revue : `reviewer-quality`, `reviewer-bugs`, `reviewer-security`, `review-challenger` · gates : `gate-checker` · `dev-simplifier` |
 | Hooks | blocage des secrets, blocage des commandes dangereuses, lecture seule pour les agents de revue, signalement des commentaires superflus |
 
-La configuration du projet se lit dans son `CLAUDE.md` (`BRANCH_PREFIX`, `COMMIT_FORMAT`, `ISSUE_TRACKER`, `MAIN_REVIEWER`), comme en v0. Elle passera dans `.devflow/config.yml` au M3.
+## Configuration
+
+`/devflow:init` détecte les profils, l'outillage et le mode de chaque sous-projet, puis écrit `.devflow/config.yml` (commité). Les préférences personnelles vont dans `.devflow/config.local.yml` (gitignoré), par exemple :
+
+```yaml
+pipeline:
+  simplifier: true
+hooks:
+  no_comments: true
+```
+
+Les conventions observées du projet vont dans `.devflow/conventions.md` : elles priment sur les règles génériques. Pour voir ce qu'un agent charge : `/devflow:rules reviewer-quality src/Controller/ProductController.php`.
 
 ## Stacks visées (v1)
 

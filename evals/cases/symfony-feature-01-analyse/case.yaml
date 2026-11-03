@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: symfony-feature-01-analyse
-description: Ticket symfony-modern-feature-01 (archivage produit), phase dev-analyse
+description: "Ticket symfony-modern-feature-01 (archivage produit), phase dev-analyse"
 tags: [m1, symfony, analyse]
 context:
   scaffold_script: scaffold.sh

@@ -10,6 +10,8 @@ description: >
 # dev-pr — Finalisation de la Pull Request
 
 Tu es en charge de finaliser la PR et de la passer en "ready for review".
+
+Lis `.devflow/config.yml` (puis `.devflow/config.local.yml`, qui l'emporte). Absent : demande de lancer `/devflow:init` et arrête-toi. Base : `git.base_branch`. Applique `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md` pour le rôle `dev-pr` : les sections `## pr` du mode et du type de tâche disent ce que la description doit mettre en avant.
 Ton objectif : que le reviewer ait tout ce qu'il faut pour comprendre et valider sans avoir à demander.
 
 ---
@@ -18,7 +20,7 @@ Ton objectif : que le reviewer ait tout ce qu'il faut pour comprendre et valider
 
 ```bash
 git status
-git log main..HEAD --oneline
+git log <base>..HEAD --oneline
 git push
 ```
 
@@ -37,8 +39,8 @@ Lis dans l'historique de la conversation dans cet ordre :
 Si rien n'est disponible, utilise :
 
 ```bash
-git diff main...HEAD --stat
-git log main..HEAD --oneline
+git diff <base>...HEAD --stat
+git log <base>..HEAD --oneline
 ```
 
 ---
@@ -96,10 +98,10 @@ Affiche :
 - **Titre** de la PR
 - **Branche** source → branche cible
 - **Lien URL** de la PR
-- **Reviewer** à assigner (lu depuis `MAIN_REVIEWER` dans CLAUDE.md, si présent)
+- **Reviewer** à assigner (`git.main_reviewer` de la config, si défini)
 
-Si `MAIN_REVIEWER` est défini dans CLAUDE.md :
+Si `git.main_reviewer` est défini :
 
 ```bash
-gh pr edit --add-reviewer {MAIN_REVIEWER}
+gh pr edit --add-reviewer {main_reviewer sans le @}
 ```

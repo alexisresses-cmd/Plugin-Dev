@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: init-php-legacy
+description: "/devflow:init --yes sur la boutique PHP legacy"
+tags: [m3, init]
+context:
+  scaffold_script: scaffold.sh

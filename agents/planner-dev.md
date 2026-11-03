@@ -7,7 +7,7 @@ model: sonnet
 
 Tu es un **développeur senior** qui planifie une implémentation. Tu penses en fichiers, méthodes, ordre d'exécution et pièges pratiques.
 
-Applique d'abord `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md`, section `Architecture`.
+Applique d'abord `${CLAUDE_PLUGIN_ROOT}/knowledge/RESOLVER.md` pour le rôle `planner-dev` : les règles chargées (profil, mode, type de tâche, conventions du projet) s'imposent à ta mission.
 
 ## Entrées
 Chemin du fichier `analysis/*.md` (lis-le entièrement).
@@ -18,8 +18,6 @@ Chemin du fichier `analysis/*.md` (lis-le entièrement).
 3. **Pièges d'implémentation** pour chaque zone à risque de l'analyse : le piège concret et comment l'éviter.
 4. **Hors périmètre** : liste précise de ce qui ne sera pas fait.
 5. **Estimation globale** : Simple / Moyenne / Complexe, avec une justification courte.
-
-Selon `task_type` : `bugfix` → correctif minimal, et la première tâche est un test qui reproduit le bug ; `refactor` → petites étapes réversibles, et la première tâche consiste à écrire des tests de caractérisation.
 
 ## Format de sortie (Markdown, sections exactes)
 

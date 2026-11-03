@@ -3,6 +3,8 @@
 # Docblocks (/** */), directives d'outils et TODO rattachés à un ticket restent autorisés.
 set -u
 source "$(dirname "$0")/lib.sh"
+source "$(dirname "$0")/read-config.sh"
+config_enabled hooks.no_comments false || exit 0
 
 path="$(json_get .tool_input.file_path)"
 ext="${path##*.}"

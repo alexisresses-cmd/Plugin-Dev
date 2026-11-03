@@ -9,7 +9,7 @@ argument-hint: "[analysis/YYYYMMDD-slug.md]"
 
 # dev-test — Tests de la branche
 
-1. **Contexte** : fichier d'analyse (`$ARGUMENTS`, sinon celui de la session ou le plus récent dont le `status` vaut `planned`). Branche de base : `main`, sinon `master`.
+1. **Contexte** : fichier d'analyse (`$ARGUMENTS`, sinon celui de la session ou le plus récent dont le `status` vaut `planned`). Base : `git.base_branch` de `.devflow/config.yml` (absent : demande `/devflow:init`).
 2. **Agent** : lance `devflow:test-writer` avec la branche de base et le chemin du fichier d'analyse.
 3. **Fichier d'analyse** : ajoute ou remplace la section `## Plan de test manuel` avec le champ `manual_plan` renvoyé par l'agent.
 4. **Commit** : si des fichiers de test ont été créés, invoque `devflow:dev-commit` (type `test`).

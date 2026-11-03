@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: php-legacy-refactor-01-cycle
+description: "Ticket php-legacy-refactor-01, dev-cycle complet avec G0 (exige Bash : CI)"
+tags: [m3, legacy, refactor, cycle, needs-sandbox]
+context:
+  scaffold_script: scaffold.sh

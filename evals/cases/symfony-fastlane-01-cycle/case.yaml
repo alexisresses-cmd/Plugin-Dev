@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: symfony-fastlane-01-cycle
+description: "Ticket S en voie rapide : implement → G1 → PR, sans tests ni reviewers (exige Bash : CI)"
+tags: [m3, fastlane, cycle, needs-sandbox]
+context:
+  scaffold_script: scaffold.sh

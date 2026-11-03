@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: php-legacy-feature-01-analyse
+description: "Ticket php-legacy-feature-01 (référence fournisseur), phase dev-analyse en mode legacy"
+tags: [m3, legacy, analyse]
+context:
+  scaffold_script: scaffold.sh

@@ -5,6 +5,11 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 SCRIPTS="$ROOT/hooks/scripts"
 pass=0; fail=0
 
+PROJECT="$(mktemp -d)"
+mkdir -p "$PROJECT/.devflow"
+printf 'schema_version: 1\nhooks:\n  block_secrets: true\n  no_comments: true   # activé pour les tests\n' > "$PROJECT/.devflow/config.yml"
+export CLAUDE_PROJECT_DIR="$PROJECT"
+
 expect() {
   local verdict="$1" script="$2" label="$3" input="$4" out code actual
   out="$(printf '%s' "$input" | "$SCRIPTS/$script" 2>&1)"; code=$?
@@ -36,6 +41,15 @@ expect block block-secrets.sh "source .env"            "$(bash_in 'source ./.env
 expect allow block-secrets.sh "cp .env.example"        "$(bash_in 'cat .env.example')"
 expect allow block-secrets.sh "git status"             "$(bash_in 'git status --short')"
 expect allow block-secrets.sh "phpunit"                "$(bash_in 'vendor/bin/phpunit --filter KeyService')"
+expect block block-secrets.sh "redirection > .env"     "$(bash_in 'printf "A=1" > .env')"
+expect block block-secrets.sh "lecture < .env"         "$(bash_in 'mysql shop < .env')"
+expect block block-secrets.sh "git show HEAD:.env"     "$(bash_in 'git show HEAD:.env')"
+expect block block-secrets.sh "sudo cat clé"           "$(bash_in 'sudo cat /etc/ssl/private/site.key')"
+expect block block-secrets.sh "cat .env | grep"        "$(bash_in 'cat .env | grep DB')"
+expect allow block-secrets.sh "heredoc qui cite .env"  "$(bash_in $'python3 - <<\'EOF\'\nprint(".env est ignoré")\nEOF\ngit status')"
+expect allow block-secrets.sh "message de commit"      "$(bash_in 'git commit -m "docs: ignore .env et *.pem"')"
+expect allow block-secrets.sh "echo texte"             "$(bash_in 'echo "copie .env.example vers .env"')"
+expect allow block-secrets.sh "script de fixture"      "$(bash_in 'bash evals/_fixtures/scaffold.sh symfony-api --with-env')"
 
 # block-dangerous
 expect block block-dangerous.sh "rm -rf"               "$(bash_in 'rm -rf var/cache')"
@@ -91,6 +105,38 @@ expect block restrict-agents.sh "reviewer subshell"       "$(agent_in devflow:re
 expect allow restrict-agents.sh "reviewer 2>/dev/null"    "$(agent_in devflow:reviewer-bugs 'git diff main...HEAD 2>/dev/null || git diff master...HEAD 2>&1')"
 expect allow restrict-agents.sh "gate-checker phpunit"    "$(agent_in devflow:gate-checker 'vendor/bin/phpunit')"
 expect allow restrict-agents.sh "session principale"      "$(bash_in 'git commit -m x')"
+
+# read-config / hooks configurables
+check() {
+  local label="$1" expected="$2" actual="$3"
+  if [[ "$expected" == "$actual" ]]; then pass=$((pass+1)); else fail=$((fail+1)); echo "FAIL [read-config] $label → '$actual' (attendu '$expected')"; fi
+}
+source "$SCRIPTS/read-config.sh"
+cat > "$PROJECT/.devflow/config.yml" <<'YAML'
+schema_version: 1
+stacks:
+  - path: api/
+    profile: symfony
+git:
+  branch_prefix: "feat/"   # préfixe
+  main_reviewer: '@alexis'
+hooks:
+  block_secrets: true
+  no_comments: true
+YAML
+check "clé simple"            "feat/"    "$(config_get git.branch_prefix x)"
+check "guillemets simples"    "@alexis"  "$(config_get git.main_reviewer x)"
+check "clé absente → défaut"  "main"     "$(config_get git.base_branch main)"
+check "section absente"       "false"    "$(config_get pipeline.fast_lane false)"
+printf 'hooks:\n  no_comments: false\n' > "$PROJECT/.devflow/config.local.yml"
+check "surcharge locale"      "false"    "$(config_get hooks.no_comments true)"
+expect allow no-comments.sh "désactivé en local"      "$(edit_in src/A.php '$a = 1;' $'// commentaire\n$a = 2;')"
+printf 'hooks:\n  block_secrets: false\n' > "$PROJECT/.devflow/config.local.yml"
+expect allow block-secrets.sh "block_secrets: false"  "$(file_in Read /app/.env)"
+rm "$PROJECT/.devflow/config.local.yml" "$PROJECT/.devflow/config.yml"
+expect block block-secrets.sh "sans config → actif"   "$(file_in Read /app/.env)"
+expect allow no-comments.sh "sans config → inactif"   "$(edit_in src/A.php '$a = 1;' $'// commentaire\n$a = 2;')"
+rmdir "$PROJECT/.devflow" "$PROJECT"
 
 echo "hooks : $pass OK, $fail KO"
 exit $fail
