@@ -31,6 +31,6 @@ jobs:
 
       - name: Syntaxe des scripts shell
         run: |
-          for f in hooks/scripts/*.sh tests/hooks/*.sh evals/_fixtures/*.sh evals/cases/*/scaffold.sh; do
+          for f in scripts/*.sh hooks/scripts/*.sh tests/hooks/*.sh tests/validate/*.sh evals/_fixtures/*.sh evals/cases/*/scaffold.sh; do
             bash -n "$f"
           done
