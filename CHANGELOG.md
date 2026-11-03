@@ -16,6 +16,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ### Modifié
 - `tasks/refactor.md` : une seule transformation par tâche du plan.
+- Profil `wordpress` : les tests restent dans le `path` du bloc (thème enfant, extension).
 
 ## [0.3.0] — M3 : configuration et résolution des règles
 
