@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: init-mixed
+description: "/devflow:init --yes sur un monorepo api/ Symfony + front/ Angular (CLAUDE.md v0)"
+tags: [m5, init, mixed, symfony, angular]
+context:
+  scaffold_script: scaffold.sh
