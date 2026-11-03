@@ -12,7 +12,8 @@
 ## plan
 - Le contrat est mis à jour **des deux côtés dans le même ticket**, jamais un côté seul.
 - Ordre des tâches : **contrat** (source de vérité, sinon DTO serveur et interface client définis ensemble) → **serveur** (validation, persistance, migration, réponse) → **client** (appel, affichage, formulaire).
-- Tests des deux côtés : test d'API serveur (statut, corps, rejet des entrées invalides) et test client qui consomme la nouvelle forme du contrat.
+- La première tâche ne touche **que le contrat, des deux côtés** (DTO serveur + interface ou type client) ; elle n'est jamais fusionnée avec la tâche serveur ou client.
+- Tests des deux côtés, **non conditionnels** : test d'API serveur (statut, corps, rejet des entrées invalides) et test client qui consomme la nouvelle forme du contrat. S'il manque une infrastructure de test, une tâche du plan la met en place.
 - Chaque tâche indique son profil.
 
 ## implement
