@@ -28,6 +28,12 @@ claude plugin eval . --case 'symfony-*' --scaffold --trust-plugin --no-publish -
 
 Une commande `/devflow:…` écrite dans le prompt est développée directement, sans passer par l'outil `Skill`. Pour vérifier qu'un skill a bien tourné, on contrôle donc un effet observable (ex. lecture de ses prompts avec `tool_used: Read`). Les cases qui accordent `Bash` exigent le sandbox OS (bubblewrap + socat sous Linux).
 
+## Validation structurelle (sans appel modèle)
+
+`scripts/validate.sh` vérifie JSON, YAML, frontmatters, sections des profils, modes et tâches, chaînes `extends` et références `devflow:<nom>` ; il tourne en CI (`.github/workflows/validate.yml`).
+En local : `scripts/validate.sh` (PyYAML requis : `pip install pyyaml`) ; `--root <dir>` valide une autre copie.
+`tests/validate/run.sh` prouve sur une copie cassée que chaque erreur est détectée.
+
 ## Cases disponibles
 
 | Case | Phase | Bash (sandbox) |
