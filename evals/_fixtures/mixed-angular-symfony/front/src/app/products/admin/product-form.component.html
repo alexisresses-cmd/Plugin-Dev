@@ -1,0 +1,24 @@
+<h1>{{ id() ? 'Modifier le produit' : 'Nouveau produit' }}</h1>
+
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <label for="product-name">Nom</label>
+  <input id="product-name" formControlName="name" maxlength="120" required>
+  @if (form.controls.name.touched && form.controls.name.invalid) {
+    <p class="error" id="product-name-error">Le nom est obligatoire (120 caractères maximum).</p>
+  }
+
+  <label for="product-price">Prix (centimes)</label>
+  <input id="product-price" type="number" formControlName="priceInCents" min="0" required>
+  @if (form.controls.priceInCents.touched && form.controls.priceInCents.invalid) {
+    <p class="error">Le prix doit être positif ou nul.</p>
+  }
+
+  <label for="product-description">Description</label>
+  <textarea id="product-description" formControlName="description" maxlength="2000"></textarea>
+
+  @if (serverError(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  <button type="submit">Enregistrer</button>
+</form>

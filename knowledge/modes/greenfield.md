@@ -8,6 +8,7 @@
 ## plan
 - Prévoir explicitement : structure des dossiers, outillage (tests, lint, analyse statique, CI) s'il manque, et un **ADR** par choix structurant (`templates/adr.md` du plugin).
 - Les tâches d'outillage passent avant les tâches fonctionnelles.
+- **Tests avec le code** : chaque tâche fonctionnelle inclut ses tests (unitaires, et e2e si elle expose une route) ; pas de tâche « tests » regroupée en fin de plan.
 
 ## implement
 - Conventions de la stack **à la lettre**, typage strict, aucune dette volontaire.

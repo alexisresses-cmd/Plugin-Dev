@@ -36,6 +36,7 @@ Selon `size` :
 
 Contenu du brouillon :
 - **Tâches** dans l'ordre d'implémentation (données et migrations d'abord, contrôleur et vue ensuite), 8 au maximum, chacune concrète et committable seule si possible : fichiers, nature (créer / modifier / supprimer), complexité. Respecte les règles `## plan` chargées (ex. test de reproduction en premier pour un bugfix, tests de caractérisation pour un refactor, changement minimal en legacy).
+- **Projet mixte** (`profiles` en contient plusieurs) : chaque tâche indique son profil (`[symfony]`, `[angular]`) ; si la synthèse identifie un contrat d'API, applique les règles `## plan` de `api-contract.md` chargées par le RESOLVER (contrat → serveur → client, tests des deux côtés, dans ce ticket).
 - **Dépendances** entre tâches.
 - **Pièges** d'implémentation, tirés des risques de l'analyse.
 - **Hors périmètre**, précis.
@@ -63,8 +64,9 @@ Présente :
 
 ```
 ## Plan — {titre}
+Profils : {profil} ({mode}), …   (projet mixte seulement)
 Tâches :
-[ ] T1 — … (fichiers, nature, complexité)
+[ ] T1 — {[profil] si projet mixte} … (fichiers, nature, complexité)
 Dépendances : …
 Hors périmètre : …
 Estimation : Simple | Moyenne | Complexe

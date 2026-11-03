@@ -39,7 +39,7 @@ Détermine, avec une phrase de justification chacun. Pour repérer les fichiers 
   - `S` : **toutes** ces conditions : 1 ou 2 fichiers, aucun changement de schéma ni d'API, `security_audit: false`, et la modification attendue est évidente sans investigation (ex. libellé, faute de frappe, constante). Un `bugfix` décrit par un **symptôme** (comportement observé, sans la correction à appliquer) n'est jamais S : il vaut M au minimum ;
   - `L` : plus de 8 fichiers, plusieurs profils ou sous-projets, changement de contrat d'API ou de schéma partagé, ou refactoring de grande ampleur ;
   - `M` : sinon.
-- **`profiles`** : profils des `stacks[]` de la config dont les `path` contiennent les fichiers repérés.
+- **`profiles`** : profils des `stacks[]` de la config dont les `path` contiennent les fichiers repérés. Au moins deux blocs concernés = **projet mixte** : précise-le aux agents (« Projet mixte : {path} → {profil}, … ») ; ils chargent alors les règles de contrat d'API via le RESOLVER.
 
 ## Étape 2 — Agents en parallèle
 
@@ -95,6 +95,8 @@ status: analysed
 **Conventions à suivre** : conventions observées à imiter (en `legacy`) ou conventions de la stack ; ce que le nouveau code doit respecter (sécurité) sans réécrire l'existant
 **Stratégie de test** : framework (`tooling.test`) ou repli (scripts sans framework, plan manuel renforcé), selon le mode et le type de tâche
 **Fichiers clés** : …
+**Profils** : {path} → {profil} ({mode}), un par bloc concerné
+**Contrat d'API** : (projet mixte seulement, sinon omettre la ligne) route et méthode ; DTO serveur (fichier) ; interface ou type client (fichier) ; champs modifiés avec type et nullabilité des deux côtés
 **Risques prioritaires** : top 3, tous agents confondus, du plus critique au moins critique
 **Questions bloquantes** : … ou « Aucune »
 **Carte du projet** : utilisée | absente{, en mode legacy : lancer `/devflow:discover`}
@@ -117,6 +119,7 @@ Approche recommandée : …
 Conventions à suivre : …
 Stratégie de test : …
 Fichiers clés : …
+Contrat d'API : …   (projet mixte seulement)
 Risques prioritaires : 1. … 2. … 3. …
 Questions bloquantes : …
 Feu vert : ✅ / ⚠️ / ❌

@@ -14,7 +14,7 @@ detect:
 
 > Étend `php-native`. Ne décrit que les différences propres à WordPress (≥ 6.0). Détection : `wp-config.php` ou `wp-load.php` présent, paquet Composer WordPress ou WPCS, `style.css` dont l'en-tête contient `Theme Name:`, ou fichier PHP à la racine du sous-projet dont l'en-tête contient `Plugin Name:`.
 > Type de projet (`wordpress.type` dans `.devflow/config.yml`) : `theme`, `child-theme` (en-tête `Template:` dans `style.css`), `plugin`, `mu-plugin` (dossier `wp-content/mu-plugins/`), `site` (installation complète).
-> Le JavaScript des blocs Gutenberg relève du profil `typescript` (jalon M5) : d'ici là, seule la partie PHP des blocs est couverte par ce profil.
+> Le JavaScript des blocs Gutenberg (`block.json`, `src/*.js|ts`) relève du profil `typescript` : `/devflow:init` lui donne son propre bloc `stacks[]` (`path` = dossier des sources JavaScript).
 
 ## Conventions
 - **Remplace** : PSR-12 → **WordPress Coding Standards** (WPCS) : indentation par tabulations, espaces à l'intérieur des parenthèses (`if ( $a )`), conditions Yoda (`if ( 'x' === $a )`), `snake_case` pour fonctions et variables, `Class_Name` pour les classes, fichiers `class-<nom>.php`.
