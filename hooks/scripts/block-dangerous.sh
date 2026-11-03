@@ -20,7 +20,10 @@ while IFS= read -r segment; do
       deny "« git push --force » interdit. Utilise --force-with-lease sur ta branche de travail."
     fi
     if [[ "$segment" =~ --force-with-lease ]]; then
-      current="$(git branch --show-current 2>/dev/null)"
+      # Sans refspec explicite (remote seul ou rien), c'est la branche courante qui est poussée.
+      positional="$(printf '%s' "${segment#*push}" | tr -s '[:space:]' '\n' | grep -cv -e '^-' -e '^$')"
+      current=""
+      (( positional < 2 )) && current="$(git branch --show-current 2>/dev/null)"
       if [[ "$segment" =~ [[:space:]:](main|master)([[:space:]]|$) || "$current" =~ ^(main|master)$ ]]; then
         deny "réécriture de l'historique de la branche principale interdite."
       fi

@@ -64,6 +64,15 @@ expect block block-dangerous.sh "push +refspec"        "$(bash_in 'git push orig
 expect block block-dangerous.sh "lease on main"        "$(bash_in 'git push --force-with-lease origin main')"
 expect allow block-dangerous.sh "lease on feature"     "$(bash_in 'git push --force-with-lease origin feat/42-upload')"
 expect allow block-dangerous.sh "push -u"              "$(bash_in 'git push -u origin feat/42-upload')"
+# Branche courante : les cas ci-dessus ne doivent pas dépendre de la branche où tournent les tests.
+REPO="$(mktemp -d)"; git -C "$REPO" init -q -b main
+pushd "$REPO" >/dev/null
+expect block block-dangerous.sh "lease sans refspec sur main" "$(bash_in 'git push --force-with-lease')"
+expect block block-dangerous.sh "lease remote seul sur main"  "$(bash_in 'git push --force-with-lease origin')"
+expect allow block-dangerous.sh "lease feature depuis main"   "$(bash_in 'git push --force-with-lease origin feat/42-upload')"
+git checkout -q -b feat/42-upload
+expect allow block-dangerous.sh "lease sans refspec sur feature" "$(bash_in 'git push --force-with-lease')"
+popd >/dev/null
 expect block block-dangerous.sh "doctrine drop"        "$(bash_in 'php bin/console doctrine:database:drop --force')"
 expect block block-dangerous.sh "wp db reset"          "$(bash_in 'wp db reset --yes')"
 expect block block-dangerous.sh "prisma reset"         "$(bash_in 'npx prisma migrate reset')"
