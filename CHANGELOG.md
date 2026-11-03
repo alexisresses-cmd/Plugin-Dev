@@ -17,6 +17,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ### Modifié
 - Mode `greenfield` : chaque tâche du plan inclut ses tests.
+- Contrat d'API : la première tâche ne touche que le contrat (des deux côtés) ; tests des deux côtés non conditionnels.
 
 ## [0.4.0] — M4 : legacy et WordPress
 
