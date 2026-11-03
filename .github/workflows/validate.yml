@@ -1,0 +1,23 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PyYAML
+        run: python3 -c 'import yaml' || pip install pyyaml
+
+      - name: Validation structurelle
+        run: scripts/validate.sh
+
+      - name: Test négatif du validateur
+        run: tests/validate/run.sh
