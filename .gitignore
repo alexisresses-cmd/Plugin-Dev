@@ -9,3 +9,6 @@ Thumbs.db
 
 # Sorties brutes de `claude plugin eval` (seuls les rapports de jalon .md sont commités)
 evals/results/*/
+
+# Worktrees des agents Claude Code (locaux)
+.claude/worktrees/

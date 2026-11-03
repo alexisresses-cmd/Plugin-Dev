@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: init-wordpress
+description: "/devflow:init --yes sur un site WordPress legacy avec thème enfant"
+tags: [m4, init, wordpress]
+context:
+  scaffold_script: scaffold.sh

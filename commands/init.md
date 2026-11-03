@@ -19,9 +19,44 @@ Tu proposes, l'utilisateur valide. Toute détection est **justifiée par des sig
 ## Étape 1 — Profils de stack
 
 1. Liste les profils disponibles : en-têtes YAML de `${CLAUDE_PLUGIN_ROOT}/knowledge/stacks/*.md` (hors `_template.md`). Lis uniquement l'en-tête (`profile`, `extends`, `detect`).
-2. Repère les sous-projets : la racine, et chaque dossier jusqu'à 2 niveaux qui contient un `composer.json`, un `package.json`, un `wp-config.php` ou un `style.css` (ignore `vendor/`, `node_modules/`, `.git/`).
-3. Pour chaque sous-projet, évalue les conditions `detect` de chaque profil : `files_any` (présence), `composer_require_any` (clés `require` et `require-dev` de `composer.json`), `package_json_any` (`dependencies` et `devDependencies`). Retiens le profil **le plus spécifique** qui correspond (le plus profond dans la chaîne `extends`). PHP sans `composer.json` → `php-native`.
-4. Profil détecté mais absent de cette version du plugin (ex. WordPress, TypeScript) : signale-le et propose le parent disponible le plus proche, ou de l'ignorer.
+2. Repère les sous-projets : la racine, et chaque dossier jusqu'à 2 niveaux qui contient un `composer.json`, un `package.json`, un `wp-config.php`, un `wp-load.php` ou un `style.css` (ignore `vendor/`, `node_modules/`, `.git/`). Le cas WordPress est traité à l'étape 1 bis.
+3. Pour chaque sous-projet, évalue les conditions `detect` de chaque profil : `files_any` (présence ; n'ouvre jamais `wp-config.php`, sa présence suffit), `composer_require_any` (clés `require` et `require-dev` de `composer.json`), `package_json_any` (`dependencies` et `devDependencies`), `headers_any` (le texte `header` dans les 30 premières lignes d'un fichier `file` à la racine du sous-projet, par exemple `Theme Name:` dans `style.css` ou `Plugin Name:` dans un `*.php`). Retiens le profil **le plus spécifique** qui correspond (le plus profond dans la chaîne `extends`). PHP sans `composer.json` → `php-native`.
+4. Profil détecté mais absent de cette version du plugin (ex. TypeScript) : signale-le et propose le parent disponible le plus proche, ou de l'ignorer.
+
+## Étape 1 bis — WordPress
+
+Si le profil `wordpress` est détecté :
+
+1. **Type** (`wordpress.type`), par sous-projet :
+   | Signal | Type |
+   |---|---|
+   | `style.css` avec `Theme Name:` **et** `Template: <parent>` | `child-theme` |
+   | `style.css` avec `Theme Name:` sans `Template:` | `theme` |
+   | `*.php` avec `Plugin Name:`, dossier sous `wp-content/mu-plugins/` | `mu-plugin` |
+   | `*.php` avec `Plugin Name:` ailleurs | `plugin` |
+   | `wp-load.php`, `wp-config.php` ou `wp-includes/version.php` à la racine | `site` |
+2. **Site complet à la racine** : cherche le code propre à l'équipe dans `wp-content/themes/*/style.css`, `wp-content/plugins/*/*.php` et `wp-content/mu-plugins/`. Sont proposés comme blocs `stacks[]` (un par dossier, `path` = le dossier) : les thèmes enfants, les mu-plugins, et tout thème ou extension que l'utilisateur désigne comme maison. Les autres thèmes et extensions sont considérés comme tiers (avec `--yes` : tiers). Aucun code maison trouvé → un seul bloc `path: ./`, type `site`.
+3. **Chemins protégés** (`wordpress.protected`), relatifs à la racine du projet, avec `/` final :
+   - `wp-admin/` et `wp-includes/` ;
+   - `wp-content/plugins/` : l'extension du bloc reste modifiable (le hook `protect-paths.sh` exempte le `path` de chaque bloc, même placé sous un chemin protégé) ;
+   - pour un thème enfant, le dossier du thème parent (`wp-content/themes/<valeur de Template:>/`) ;
+   - n'inscris que les chemins présents dans le dépôt ; dépôt limité au thème ou à l'extension → `protected: []`.
+4. Signale que le JavaScript des blocs Gutenberg (`block.json`, `src/*.js`) relève du profil `typescript` (jalon M5).
+
+Bloc généré (thème enfant d'un site complet) :
+
+```yaml
+  - path: wp-content/themes/mon-theme/
+    profile: wordpress
+    mode: legacy
+    wordpress:
+      type: child-theme
+      protected:
+        - wp-admin/
+        - wp-includes/
+        - wp-content/plugins/
+        - wp-content/themes/parent-theme/
+```
 
 ## Étape 2 — Outillage
 
@@ -29,8 +64,8 @@ Pour chaque sous-projet, détecte (sinon `null`) :
 
 | Clé | Signaux |
 |---|---|
-| `tooling.test` | `vendor/bin/phpunit` ou `bin/phpunit` + `phpunit.xml*` |
-| `tooling.lint` | `phpcs.xml*` / `vendor/bin/phpcs` ; `.php-cs-fixer*.php` → `vendor/bin/php-cs-fixer fix --dry-run --diff` |
+| `tooling.test` | `vendor/bin/phpunit` ou `bin/phpunit` + `phpunit.xml*` (WordPress : `brain/monkey`, `.wp-env.json`) |
+| `tooling.lint` | `phpcs.xml*` / `vendor/bin/phpcs` (WordPress : `wp-coding-standards/wpcs` → `vendor/bin/phpcs --standard=WordPress`) ; `.php-cs-fixer*.php` → `vendor/bin/php-cs-fixer fix --dry-run --diff` |
 | `tooling.static_analysis` | `phpstan.neon*` → `vendor/bin/phpstan analyse --no-progress` ; `psalm.xml*` → `vendor/bin/psalm` |
 | `tooling.static_analysis_baseline` | `phpstan-baseline.neon`, `psalm-baseline.xml` |
 
@@ -47,6 +82,8 @@ Mesure et affiche ces signaux, puis propose un mode :
 | Namespaces | part des fichiers PHP avec `namespace` |
 | Taille | lignes moyennes des fichiers PHP du code applicatif (hors `vendor/`) |
 | Âge et activité | date du premier commit, nombre de commits |
+
+Les signaux portent sur le code du sous-projet seulement : pour WordPress, le `path` du bloc, sans les chemins protégés ni le code tiers.
 
 - **legacy** : au moins deux signaux parmi : PHP < 7.4, pas de Composer, pas de tests, moins de 50 % de fichiers avec namespace, plus de 400 lignes en moyenne.
 - **greenfield** : option `--greenfield`, ou code applicatif quasi vide (moins de 5 fichiers source hors configuration et tests). Le nombre de commits n'est **pas** un signal suffisant (clone partiel, import récent).
@@ -82,9 +119,12 @@ Ensuite :
 ```
 ✅ devflow initialisé
   {path} → {profil} ({mode}) — signaux : …
+  WordPress : type={…} protégés={…}
   Outillage : test={…} lint={…} analyse={…}
   Git : base={…} préfixe={…} commits={…}
   Fichiers : .devflow/config.yml, .devflow/conventions.md, .gitignore, CLAUDE.md
 
 Suite : /devflow:dev-analyse <ticket>
 ```
+
+Si un profil est en mode `legacy`, remplace la ligne « Suite » par : « Suite : /devflow:discover (carte du projet et conventions observées), puis /devflow:dev-analyse <ticket> ».

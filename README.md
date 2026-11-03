@@ -2,7 +2,7 @@
 
 > Plugin Claude Code multi-stack : de l'analyse du ticket à la PR, avec des agents qui adaptent leurs règles à la stack, à la maturité du projet et au type de tâche.
 
-**Statut :** v0.3.0 (jalon M3). Profils `php-native` et `symfony` ; modes `legacy`, `modern`, `greenfield` ; types de tâche `feature`, `bugfix`, `refactor`. WordPress arrive au M4, TypeScript (Node, NestJS, Angular) au M5.
+**Statut :** v0.4.0 (jalon M4). Profils `php-native`, `symfony` et `wordpress` ; modes `legacy`, `modern`, `greenfield` ; types de tâche `feature`, `bugfix`, `refactor`. TypeScript (Node, NestJS, Angular) arrive au M5.
 
 ## Installation
 
@@ -17,6 +17,7 @@ En local, depuis un clone : `/plugin marketplace add ./` puis `/plugin install d
 
 ```bash
 /devflow:init                                                 # qualifie le projet → .devflow/config.yml
+/devflow:discover                                             # projet existant : carte du projet + conventions observées
 /devflow:dev-analyse https://github.com/owner/repo/issues/42   # analyse multi-agents
 /devflow:dev-plan                                             # plan, branche, draft PR, mode recommandé
 /devflow:dev-cycle analysis/20261102-mon-ticket.md            # mode automatisé
@@ -30,9 +31,9 @@ Mode séquentiel : `/devflow:dev-implement` → `/devflow:dev-test` → `/devflo
 | Type | Éléments |
 |---|---|
 | Skills (orchestrateurs) | `dev-analyse`, `dev-plan`, `dev-cycle`, `dev-implement`, `dev-test`, `dev-review`, `challenge-review`, `dev-pr`, `dev-commit`, `review-return`, `dev-copilot` |
-| Commandes | `init`, `dev-branch`, `rules` (skill de diagnostic) |
-| Agents (contexte isolé) | analyse : `business-analyst`, `code-mapper`, `architect`, `security-analyst` · plan : `plan-challenger` (+ `planner-dev`, `planner-cto` pour les tickets lourds) · tests : `test-writer` · revue : `reviewer-quality`, `reviewer-bugs`, `reviewer-security`, `review-challenger` · gates : `gate-checker` · `dev-simplifier` |
-| Hooks | blocage des secrets, blocage des commandes dangereuses, lecture seule pour les agents de revue, signalement des commentaires superflus |
+| Commandes | `init`, `discover`, `dev-branch`, `rules` (skill de diagnostic) |
+| Agents (contexte isolé) | analyse : `business-analyst`, `code-mapper`, `architect`, `security-analyst` · plan : `plan-challenger` (+ `planner-dev`, `planner-cto` pour les tickets lourds) · tests : `test-writer` · revue : `reviewer-quality`, `reviewer-bugs`, `reviewer-security`, `review-challenger` · gates : `gate-checker` · découverte : `cartographer`, `convention-detector`, `risk-mapper` · `dev-simplifier` |
+| Hooks | blocage des secrets, blocage des commandes dangereuses, protection des chemins (cœur WordPress, thème parent, extensions tierces), lecture seule pour les agents de revue, signalement des commentaires superflus |
 
 ## Configuration
 

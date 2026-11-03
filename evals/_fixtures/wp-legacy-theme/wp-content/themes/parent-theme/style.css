@@ -1,0 +1,16 @@
+/*
+Theme Name: Parent Theme Pro
+Theme URI: https://themes.example.com/parent-theme-pro
+Author: Example Themes
+Description: Thème commercial (fixture devflow). Ne jamais modifier : personnaliser dans le thème enfant.
+Version: 4.2.1
+Requires at least: 6.0
+Requires PHP: 7.4
+License: Commercial
+Text Domain: parent-theme
+*/
+
+body {
+	font-family: Georgia, serif;
+	color: #222;
+}

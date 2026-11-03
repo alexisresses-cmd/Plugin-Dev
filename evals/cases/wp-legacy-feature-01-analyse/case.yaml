@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: wp-legacy-feature-01-analyse
+description: "Ticket wp-legacy-feature-01 (shortcode des prochains événements), phase dev-analyse sur un thème enfant legacy"
+tags: [m4, wordpress, legacy, analyse]
+context:
+  scaffold_script: scaffold.sh

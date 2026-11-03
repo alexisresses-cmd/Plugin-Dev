@@ -8,6 +8,7 @@
 
 ## plan
 - **Petites étapes réversibles** (méthode Mikado) : chaque étape laisse le code fonctionnel.
+- **Une transformation par tâche** : une extraction (fonction, classe, méthode) ou un déplacement par tâche, jamais plusieurs extractions regroupées dans la même tâche.
 - Première tâche : **tests de caractérisation automatisés** de la zone (gate **G0**), avant toute modification d'un fichier de production. Sans framework de test : scripts PHP autonomes (repli du profil). Un plan de test manuel ne remplace **jamais** ces tests pour un refactor, même en mode legacy.
 - Gros chantier : strangler fig ou branch by abstraction, en plusieurs PR.
 

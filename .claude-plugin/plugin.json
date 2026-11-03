@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "devflow",
   "displayName": "devflow",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Pipeline de développement de l'analyse du ticket à la PR : agents spécialisés dont les règles s'adaptent à la stack, à la maturité du projet et au type de ticket. v0.3 : PHP natif et Symfony.",
   "author": {
     "name": "Alexis Resses",
