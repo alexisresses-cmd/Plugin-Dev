@@ -1,0 +1,4 @@
+{
+    "symfony/framework-bundle": { "version": "7.2" },
+    "doctrine/doctrine-bundle": { "version": "2.13" }
+}

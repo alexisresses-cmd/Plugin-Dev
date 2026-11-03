@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "alexis-plugins",
+  "description": "Plugins Claude Code d'Alexis Resses",
+  "owner": { "name": "Alexis Resses", "url": "https://github.com/alexisresses-cmd" },
+  "plugins": [
+    {
+      "name": "devflow",
+      "source": "./",
+      "description": "Pipeline de développement de l'analyse du ticket à la PR, avec agents spécialisés et gates de qualité.",
+      "category": "development"
+    }
+  ]
+}

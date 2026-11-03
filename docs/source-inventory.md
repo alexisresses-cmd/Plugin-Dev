@@ -112,3 +112,14 @@ La source a **G1** (implémentation, 7 critères), **G2** (tests dans dev-cycle,
 5. `dev-review` : 3 reviewers en parallèle (sécurité en opus), niveaux blocking / to_fix / note, verdict go / go_with_reserves / no_go, correction auto 2× max.
 6. `challenge-review` / `review-return` : tableau verdict + sévérité réelle + résumé exécutif ; ne jamais juger sans lire le code.
 7. `dev-pr` : description en 5 sections, `gh pr ready`, ajout du reviewer.
+
+## 6. Défauts de la v0 découverts pendant la migration (M1)
+
+| Constat | Impact | Traitement M1 |
+|---|---|---|
+| `dev-cycle/workflow.js` : apostrophes non échappées dans des chaînes `'…'` (`'Lecture de l'analyse…'`) | **Erreur de syntaxe JS** : le workflow ne pouvait pas s'exécuter, donc le mode Automated n'a jamais fonctionné tel quel | Corrigé (apostrophes typographiques), vérifié par `node --check` |
+| `dev-plan/agents/*.md` (architect, challenger, developer) ne sont référencés nulle part dans `dev-plan/SKILL.md` | Le plan était produit sans ces agents, malgré ce qu'annonçait le README | Conservés dans `skills/dev-plan/prompts/` ; branchés au M2 (`planner-dev`, `planner-cto`, `plan-challenger`) |
+| `dev-review/agents/*.md` non utilisés : `workflow.js` a ses propres prompts, plus courts | Les grilles détaillées (upload, OWASP) n'étaient pas appliquées | Conservés dans `skills/dev-review/prompts/` ; fusionnés au M2 |
+| `skills/_shared/php-conventions.md` n'est lu par aucun skill | Les conventions PHP n'étaient pas injectées | `knowledge/stacks/php-native.md` est lu par `dev-implement` dès le M1 |
+| `workflow('dev-review')` dans un workflow de plugin | Un nom non préfixé n'est pas résolu (`no workflow with that name`) | `workflow('devflow:dev-review-run')` |
+| Workflows et skills homonymes (`dev-cycle`, `dev-review`) | Collision de commandes `/devflow:…` dans un plugin | Workflows renommés `dev-cycle-run`, `dev-review-run` |

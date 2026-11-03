@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "devflow",
+  "displayName": "devflow",
+  "version": "0.1.0",
+  "description": "Pipeline de développement de l'analyse du ticket à la PR : agents spécialisés, gates de qualité, revue multi-agents. v0.1 : périmètre PHP repris de ai-claude-php-workflow.",
+  "author": { "name": "Alexis Resses", "url": "https://github.com/alexisresses-cmd" },
+  "homepage": "https://github.com/alexisresses-cmd/Plugin-Dev",
+  "repository": "https://github.com/alexisresses-cmd/Plugin-Dev",
+  "license": "MIT",
+  "keywords": ["workflow", "code-review", "php", "symfony", "clean-code", "pull-request"]
+}

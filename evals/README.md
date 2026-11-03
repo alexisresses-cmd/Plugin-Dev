@@ -6,11 +6,27 @@
 
 ```
 evals/
-├── tickets/<id>.md            # un ticket de référence
-└── results/YYYYMMDD-vX.Y.md   # un rapport d'exécution par version
+├── tickets/<id>.md              # spécification lisible du ticket
+├── _fixtures/<fixture>/         # projets témoins statiques + scaffold.sh
+├── cases/<id>-<phase>/          # cases exécutables par `claude plugin eval` (ADR 0006)
+└── results/
+    ├── YYYYMMDD-vX.Y.md         # rapport de jalon (commité)
+    └── <horodatage>/            # sorties brutes (ignorées par git)
 ```
 
-> Le passage au format natif `claude plugin eval` est proposé dans `docs/backlog.md` (ADR 0006). Il sera décidé avant le M1.
+## Lancer les évals
+
+```bash
+# Tous les cases (coût réel : appels modèle facturés)
+claude plugin eval . --scaffold --trust-plugin --no-publish
+
+# Un sous-ensemble, sans run de comparaison sans plugin
+claude plugin eval . --case 'symfony-*' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write
+```
+
+`--scaffold` est nécessaire pour construire le projet témoin. `--allow-tools Write` est nécessaire aux cases qui produisent un fichier (`analysis/…`).
+
+Une commande `/devflow:…` écrite dans le prompt est développée directement, sans passer par l'outil `Skill`. Pour vérifier qu'un skill a bien tourné, on contrôle donc un effet observable (ex. lecture de ses prompts avec `tool_used: Read`). Les cases qui accordent `Bash` exigent le sandbox OS (bubblewrap + socat sous Linux).
 
 ## Format d'un ticket
 
@@ -33,7 +49,7 @@ milestone: M4      # jalon à partir duquel le ticket doit passer
 
 ## Projets témoins
 
-Pour l'instant, les projets sont **fictifs** : chaque ticket décrit dans `project` une fixture à générer (`fixture:<nom>`), avec son état de départ dans la section `## Projet témoin`. Ils seront remplacés par de vrais projets, ou générés par script, au moment de la première exécution (M1).
+Les projets sont **fictifs** : chaque ticket nomme dans `project` une fixture (`fixture:<nom>`) décrite dans sa section `## Projet témoin`. Les fixtures sont créées dans `_fixtures/` au jalon où leurs tickets deviennent exécutables (`symfony-api` : M1).
 
 | Fixture | Profil(s) | Mode |
 |---|---|---|
