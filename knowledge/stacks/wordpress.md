@@ -38,6 +38,7 @@ detect:
 - Intégration : **`WP_UnitTestCase`** (suite de tests WordPress, `install-wp-tests.sh` ou **`wp-env`** : `npx wp-env run tests-cli --env-cwd=… vendor/bin/phpunit`).
 - Unitaire sans WordPress : **Brain Monkey** (`Functions\when()`, `Functions\expect()`, `Actions\expectAdded()`) avec PHPUnit, pour tester une fonction qui appelle l'API WordPress sans base de données.
 - Sans infrastructure de test : scripts PHP autonomes pour la logique pure (validation, formatage), plan de test manuel pour le reste (écran, rôle, nonce expiré, données ACF absentes).
+- Emplacement : tests et scripts de test **dans le `path` du bloc** (ex. `wp-content/themes/mon-theme/tests/`), jamais à la racine de l'installation ni dans un dossier protégé.
 - Plan de test manuel WordPress : préciser le rôle connecté (visiteur, abonné, éditeur, administrateur), la page ou l'écran d'administration, et vérifier la console et `debug.log` (`WP_DEBUG_LOG`).
 
 ## Security
