@@ -21,7 +21,16 @@ stacks:
   #       - wp-content/plugins/       # le path d'un bloc reste modifiable même s'il est dessous
   #       - wp-content/themes/parent-theme/   # thème parent d'un thème enfant
   #   config.local.yml peut ajouter des chemins protégés, jamais en retirer.
+  # Projet mixte : un bloc par sous-projet, sans bloc ./ si la racine n'a pas de code applicatif.
+  # - path: api/
+  #   profile: symfony
+  #   mode: modern
+  # - path: front/
+  #   profile: angular
+  #   mode: modern
 
+# Commandes globales, lancées depuis la racine. Projet mixte : une commande par sous-projet,
+# chacune dans un sous-shell, enchaînées par && (ex. "(cd api && vendor/bin/phpunit) && (cd front && npx vitest run)").
 tooling:                          # commandes détectées par /devflow:init ; null si absent
   test: null                      # ex. "vendor/bin/phpunit"
   lint: null                      # ex. "vendor/bin/phpcs"
