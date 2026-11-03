@@ -1,0 +1,11 @@
+// Schéma Prisma : aucun modèle métier pour l'instant.
+// La chaîne de connexion est lue dans l'environnement (DATABASE_URL), jamais commitée.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

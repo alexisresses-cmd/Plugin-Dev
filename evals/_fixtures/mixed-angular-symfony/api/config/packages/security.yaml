@@ -1,0 +1,16 @@
+security:
+    providers:
+        users_in_memory:
+            memory:
+                users:
+                    admin: { password: null, roles: ['ROLE_ADMIN'] }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            stateless: true
+            provider: users_in_memory
+            http_basic: ~
+    access_control:
+        - { path: ^/api/admin, roles: ROLE_ADMIN }

@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: nest-greenfield-feature-01-plan
+description: "Ticket nest-greenfield-feature-01, phase dev-plan jusqu'à la demande de validation (aucune action git)"
+tags: [m5, nestjs, greenfield, plan]
+context:
+  scaffold_script: scaffold.sh

@@ -35,10 +35,10 @@ Une commande `/devflow:…` écrite dans le prompt est développée directement,
 | `hook-block-secrets`, `hook-protect-wordpress` | hook (comparaison avec / sans plugin) | non |
 | `rules-symfony-reviewer-quality`, `rules-legacy-test-writer-refactor`, `rules-symfony-gate-checker-bugfix` | RESOLVER (3 combinaisons) | non |
 | `rules-angular-reviewer-quality` | RESOLVER, profil angular (critères de review front ; fixture `angular-app`) | non |
-| `init-symfony`, `init-php-legacy`, `init-wordpress` | `/devflow:init --yes` | non |
+| `init-symfony`, `init-php-legacy`, `init-wordpress`, `init-nest-greenfield`, `init-mixed` | `/devflow:init --yes` | non |
 | `discover-php-legacy`, `discover-wordpress` | `/devflow:discover --yes` (scaffold `--no-conventions`) | non |
-| `symfony-feature-01-analyse`, `symfony-bugfix-01-analyse`, `php-legacy-feature-01-analyse`, `symfony-fastlane-01-analyse`, `wp-legacy-feature-01-analyse` | dev-analyse | non |
-| `symfony-feature-01-plan`, `php-legacy-refactor-01-plan`, `wp-legacy-refactor-01-plan` | dev-plan (jusqu'à la validation) | non |
+| `symfony-feature-01-analyse`, `symfony-bugfix-01-analyse`, `php-legacy-feature-01-analyse`, `symfony-fastlane-01-analyse`, `wp-legacy-feature-01-analyse`, `nest-greenfield-feature-01-analyse`, `angular-feature-01-analyse`, `mixed-feature-01-analyse` | dev-analyse | non |
+| `symfony-feature-01-plan`, `php-legacy-refactor-01-plan`, `wp-legacy-refactor-01-plan`, `nest-greenfield-feature-01-plan`, `mixed-feature-01-plan` | dev-plan (jusqu'à la validation) | non |
 | `symfony-feature-01-review` | dev-review | **oui** |
 | `php-legacy-refactor-01-cycle` | dev-cycle avec G0 | **oui** |
 | `symfony-fastlane-01-cycle` | dev-cycle, voie rapide | **oui** |
@@ -52,6 +52,18 @@ claude plugin eval . --case 'hook-protect-wordpress' --scaffold --trust-plugin -
 claude plugin eval . --case 'wp-*' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write Edit
 claude plugin eval . --case 'init-wordpress' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write Edit
 ```
+
+Jalon M5 (profils TypeScript et projets mixtes) :
+
+```bash
+claude plugin eval . --case 'init-nest-greenfield' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write Edit
+claude plugin eval . --case 'init-mixed' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write Edit
+claude plugin eval . --case 'nest-greenfield-*' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write
+claude plugin eval . --case 'angular-*' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write
+claude plugin eval . --case 'mixed-*' --scaffold --trust-plugin --no-publish --ablation none --allow-tools Write
+```
+
+`init-mixed` attend deux blocs `stacks[]` (`api/` → `symfony`, `front/` → `angular`, tous deux `modern`) ; `mixed-feature-01-plan` part d'une analyse de taille L et attend les deux planners, puis un plan qui met à jour le contrat (DTO PHP et interface TS) dans l'ordre contrat → serveur → client.
 
 ## Format d'un ticket
 
@@ -74,7 +86,7 @@ milestone: M4      # jalon à partir duquel le ticket doit passer
 
 ## Projets témoins
 
-Les projets sont **fictifs** : chaque ticket nomme dans `project` une fixture (`fixture:<nom>`) décrite dans sa section `## Projet témoin`. Les fixtures sont créées dans `_fixtures/` au jalon où leurs tickets deviennent exécutables (`symfony-api` : M1, `php-legacy-shop` : M3, `wp-legacy-theme` : M4).
+Les projets sont **fictifs** : chaque ticket nomme dans `project` une fixture (`fixture:<nom>`) décrite dans sa section `## Projet témoin`. Les fixtures sont créées dans `_fixtures/` au jalon où leurs tickets deviennent exécutables (`symfony-api` : M1, `php-legacy-shop` : M3, `wp-legacy-theme` : M4, `nest-greenfield`, `angular-app`, `mixed-angular-symfony` : M5). `claude-v0/` contient le `CLAUDE.md` devflow v0 de chaque fixture utilisée par un case `init-*` (option `--no-devflow`) ; `analyses/` les analyses validées qui alimentent les cases de plan (option `--analysis`).
 
 | Fixture | Profil(s) | Mode |
 |---|---|---|

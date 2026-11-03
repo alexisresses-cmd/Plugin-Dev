@@ -1,0 +1,11 @@
+<h1>Catalogue</h1>
+
+<ul class="product-list">
+  @for (product of products(); track product.id) {
+    <li>
+      <span class="name">{{ product.name }}</span>
+      <span class="category">{{ product.category }}</span>
+      <span class="price">{{ product.priceInCents / 100 | currency: 'EUR' }}</span>
+    </li>
+  }
+</ul>

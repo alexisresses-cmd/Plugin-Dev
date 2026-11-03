@@ -1,0 +1,6 @@
+/api/vendor/
+/api/var/
+/front/node_modules/
+/front/dist/
+/front/.angular/
+.devflow/config.local.yml
