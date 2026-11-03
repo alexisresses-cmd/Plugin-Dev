@@ -16,6 +16,8 @@ Ce plugin est la refonte de [ai-claude-php-workflow](https://github.com/alexisre
 
 - [Spécification](docs/SPEC.md)
 - [Décisions d'architecture](docs/adr/)
+- [Inventaire du repo v0](docs/source-inventory.md)
+- [Tickets de référence](evals/README.md)
 
 ## Licence
 
