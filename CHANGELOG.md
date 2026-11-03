@@ -4,6 +4,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ## [Unreleased]
 
+## [1.0.0] — M6 : v1
+
+### Ajouté
+- `scripts/validate.sh` : validation de la structure du plugin (manifestes, frontmatter des skills et agents, profils et leurs `extends`, RESOLVER, cases d'évals) ; option `--root` ; tests dans `tests/validate/run.sh`.
+- Workflow `.github/workflows/validate.yml` ; `ci.yml` vérifie la syntaxe des nouveaux scripts.
+- Documentation : README v1.0, `docs/adding-a-stack.md`, `docs/migration-from-v0.md`.
+- Rapport d'évaluation v1.0 : 26 cases non-sandbox à 1,00.
+
 ## [0.5.0] — M5 : TypeScript et projets mixtes
 
 ### Ajouté
