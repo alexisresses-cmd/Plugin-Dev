@@ -2,7 +2,7 @@
 
 > Plugin Claude Code multi-stack : de l'analyse du ticket à la PR, avec des agents qui adaptent leurs règles à la stack, à la maturité du projet et au type de tâche.
 
-**Statut :** v1.0.0. Stacks PHP (natif, Symfony, WordPress) et TypeScript (Node, NestJS, Angular), projets mixtes ; modes `legacy`, `modern`, `greenfield` ; types de tâche `feature`, `bugfix`, `refactor`.
+**Statut :** v1.0.1. Stacks PHP (natif, Symfony, WordPress) et TypeScript (Node, NestJS, Angular), projets mixtes ; modes `legacy`, `modern`, `greenfield` ; types de tâche `feature`, `bugfix`, `refactor`.
 
 ## Installation
 

@@ -4,6 +4,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage :
 
 ## [Unreleased]
 
+## [1.0.1]
+
+### Corrigé
+- Hook `block-dangerous.sh` : `git push --force-with-lease origin <branche>` lancé depuis `main` n'est plus refusé. La branche courante n'est prise en compte que si la commande ne nomme aucune branche à pousser. Les pushs vers `main`/`master` restent bloqués.
+- Tests des hooks indépendants de la branche où ils tournent (la CI échouait sur `main`).
+
 ## [1.0.0] — M6 : v1
 
 ### Ajouté
